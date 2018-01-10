@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "206576886396",
+    "firebase_url": "https://thesis-final.firebaseio.com",
+    "project_id": "thesis-final",
+    "storage_bucket": "thesis-final.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206576886396:android:77dcaf181134025f",
+        "android_client_info": {
+          "package_name": "com.example.jm.login"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "206576886396-ed652ehmu6hj0gjmark5uca1u4c5rdsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWDby61DhyO730GLsjgvrXi7_XlrrA4Gk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

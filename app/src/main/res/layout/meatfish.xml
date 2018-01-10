@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorSecundary"
+    android:id="@+id/mainf">
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center">
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Meat and Fish"
+            android:textSize="24dp"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"/>
+    </RelativeLayout>
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        >
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="-49dp">
+
+            <TableLayout
+                android:id="@+id/table1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="55dp"
+
+                >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    >
+
+                    <ImageButton
+                        android:id="@+id/bacon"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/bacon"
+                        android:padding="5dp"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/beef"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/beef"
+                        android:padding="5dp"
+                        />
+                    <ImageButton
+                        android:id="@+id/chiken"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/chiken"
+                        android:padding="5dp"
+                        />
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    >
+
+                    <ImageButton
+                        android:id="@+id/fish"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/fish"
+                        android:padding="5dp"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/ham"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/ham"
+                        android:padding="5dp"
+                        />
+                    <ImageButton
+                        android:id="@+id/hotdog"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/hotdog"
+                        android:padding="5dp"
+                        />
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    >
+
+                    <ImageButton
+                        android:id="@+id/lobster"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/lobster"
+                        android:padding="5dp"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/oyster"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/oyster"
+                        android:padding="5dp"
+                        />
+                    <ImageButton
+                        android:id="@+id/shrimp"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/shrimp"
+                        android:padding="5dp"
+                        />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

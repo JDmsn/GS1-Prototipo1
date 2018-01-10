@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorSecundary"
+    android:id="@+id/mainf">
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center">
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Snacks and Sweets"
+            android:textSize="24dp"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"/>
+    </RelativeLayout>
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        >
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="-49dp">
+
+            <TableLayout
+                android:id="@+id/table1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="55dp"
+
+                >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    >
+
+                    <ImageButton
+                        android:id="@+id/cake"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/cake"
+                        android:padding="5dp"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/chips"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/chips"
+                        android:padding="5dp"
+                        />
+                    <ImageButton
+                        android:id="@+id/chocolate"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/chocolate"
+                        android:padding="5dp"
+                        />
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    >
+
+                    <ImageButton
+                        android:id="@+id/cola"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/cola"
+                        android:padding="5dp"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/dessert"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/dessert"
+                        android:padding="5dp"
+                        />
+                    <ImageButton
+                        android:id="@+id/honey"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/honey"
+                        android:padding="5dp"
+                        />
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    >
+
+                    <ImageButton
+                        android:id="@+id/jam"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/jam"
+                        android:padding="5dp"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/jello"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/jello"
+                        android:padding="5dp"
+                        />
+                    <ImageButton
+                        android:id="@+id/popcorn"
+                        android:tag="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:src="@drawable/popcorn"
+                        android:padding="5dp"
+                        />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

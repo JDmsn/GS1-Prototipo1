@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.jm.buywithme.MainWindow"
+    tools:showIn="@layout/app_bar_main_window"
+    android:background="@drawable/gradient">
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+
+            <GridView
+                android:id="@+id/basket"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:numColumns="3"
+
+                >
+
+
+            </GridView>
+
+
+            <TableLayout
+                android:id="@+id/table1"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:baselineAligned="true">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="-2dp">
+
+                    <ImageButton
+                        android:id="@+id/f_and_v"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/fruitandvegetable" />
+
+                    <ImageButton
+                        android:id="@+id/b_and_p"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/breadandpastries" />
+
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="-2dp">
+
+                    <ImageButton
+                        android:id="@+id/m_and_c"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/milkandcheese" />
+
+                    <ImageButton
+                        android:id="@+id/m_and_f"
+
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/meatandcheese" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="-2dp">
+
+                    <ImageButton
+                        android:id="@+id/s_and_s"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/snacksandsweets" />
+
+                    <ImageButton
+                        android:id="@+id/f_f"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/frozenfood" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp">
+
+                    <ImageButton
+                        android:id="@+id/h_and_h"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/householdandhealth" />
+
+                    <ImageButton
+                        android:id="@+id/p_supplies"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/petsupplies" />
+                </TableRow>
+
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
