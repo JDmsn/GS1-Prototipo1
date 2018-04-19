@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient"
+    tools:context="com.example.jm.buywithme.Settings">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        >
+
+    </android.support.v7.widget.Toolbar>
+
+
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar2"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <TextView
+                android:id="@+id/listName"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/email"
+
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="31dp"
+                android:fontFamily="@font/asap"
+                android:text="List Name"
+                android:textSize="19dp"
+                android:textColor="@android:color/background_dark" />
+
+            <Button
+                android:id="@+id/saveNameList"
+                android:layout_width="100dp"
+                android:layout_height="33dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/inputNameList"
+                android:layout_marginEnd="26dp"
+                android:background="@drawable/buttonround"
+                android:text="Save" />
+
+            <EditText
+                android:id="@+id/inputNameList"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/listName"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="2dp"
+                android:ems="10"
+                android:hint=""
+                android:inputType="textPersonName"
+                android:textSize="17dp" />
+
+            <TextView
+                android:id="@+id/admin"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/inputNameList"
+                android:layout_below="@+id/inputNameList"
+                android:layout_marginTop="29dp"
+                android:fontFamily="@font/asap"
+                android:text="Admin"
+                android:textSize="19dp"
+                android:textColor="@android:color/background_dark" />
+
+            <EditText
+                android:id="@+id/inputAdmin"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/admin"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="2dp"
+                android:ems="10"
+                android:hint=""
+                android:inputType="textPersonName"
+                 />
+
+
+            <TextView
+                android:id="@+id/participants"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/listName"
+                android:layout_below="@+id/inputAdmin"
+                android:layout_marginTop="29dp"
+                android:fontFamily="@font/asap"
+                android:text="Participants"
+                android:textSize="19dp"
+                android:textColor="@android:color/background_dark" />
+
+            <ListView
+                android:id="@+id/participantsView"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_alignParentStart="true"
+                android:textSize="19dp"
+                android:layout_below="@+id/participants"></ListView>
+
+            <TextView
+                android:id="@+id/addParticipants"
+                android:layout_width="150dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="29dp"
+                android:layout_alignStart="@+id/participants"
+                android:layout_below="@+id/participantsView"
+                android:fontFamily="@font/asap"
+                android:text="Add Participants"
+                android:textColor="@android:color/background_dark"
+                android:textSize="19dp"/>
+
+            <EditText
+                android:id="@+id/addParticipantsField"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/addParticipants"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="2dp"
+                android:ems="10"
+                android:hint=""
+                android:text=""
+                android:inputType="textPersonName"
+                android:textSize="17dp" />
+
+
+            <Button
+                android:id="@+id/addParticipantButton"
+                android:layout_width="100dp"
+                android:layout_height="33dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/addParticipantsField"
+                android:layout_marginEnd="26dp"
+                android:background="@drawable/buttonround"
+                android:text="Invite" />
+            <Button
+                android:id="@+id/deleteList"
+                android:layout_width="250dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/addParticipantsField"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/buttonround"
+                android:text="Delete List" />
+
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

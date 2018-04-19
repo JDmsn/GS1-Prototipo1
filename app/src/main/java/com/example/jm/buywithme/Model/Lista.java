@@ -8,13 +8,35 @@ import java.util.List;
 
 public class Lista {
 
+    private Long time;
+    private String admin;
+    private String nameList;
+    private List<String> users = new ArrayList<>();
     private List<Integer> array = new ArrayList<>();
     private List<Integer> arrayw = new ArrayList<>();
     private List<Integer> id = new ArrayList<>();
     private List<String> section = new ArrayList<>();
 
     public Lista(){
+        //Cambiado!!!
+        time = 0L;
+    }
 
+    public Lista(String admin, String nameList){
+        this.admin = admin;
+        users.add(admin);
+        this.nameList = nameList;
+        time = System.nanoTime();
+
+    }
+
+    public void setTime(Long time){
+
+        this.time = time;
+    }
+
+    public Long getTime(){
+        return time;
     }
 
     public void setArray(List<Integer> array) {
@@ -77,7 +99,7 @@ public class Lista {
     }
 
     public Lista getList(String section){
-        Lista sec = new Lista();
+        Lista sec = new Lista(admin, nameList);
         for(int i=0; i<this.section.size(); i++){
             if(this.section.get(i).equals(section)){
                 //array, arrayw, id, section
@@ -104,7 +126,40 @@ public class Lista {
     }
 
     public int size(){
-
         return array.size();
+    }
+
+    public String getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(String admin) {
+        this.admin = admin;
+    }
+
+    public List<String> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<String> users) {
+        this.users = users;
+    }
+
+    public void addUsersToTheList(String user){
+        this.users.add(user);
+
+    }
+
+    public void deleteUsersFromTheList(String user){
+        this.users.remove(user);
+
+    }
+
+    public String getNameList() {
+        return nameList;
+    }
+
+    public void setNameList(String nameList) {
+        this.nameList = nameList;
     }
 }

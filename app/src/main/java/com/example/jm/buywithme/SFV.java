@@ -27,7 +27,6 @@ import java.util.ArrayList;
 public class SFV extends Activity{
     private Intent in, intent;
     private ImageButton im;
-    private Lista list = new Lista();
     private ArrayAdapter<String> ad;
     private GridView gv;
     private ArrayList<Integer> elements = new ArrayList<>();

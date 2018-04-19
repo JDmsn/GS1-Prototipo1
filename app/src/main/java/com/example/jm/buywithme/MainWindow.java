@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,19 +21,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.jm.buywithme.Model.Lista;
 import com.example.jm.buywithme.Model.ListAdapter;
 import com.example.jm.buywithme.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainWindow extends AppCompatActivity
@@ -44,47 +55,146 @@ public class MainWindow extends AppCompatActivity
     private Intent in;
     private GridView gv;
     private Lista list = new Lista();
+    private Lista newList = new Lista();
     private ListAdapter listAdapter;
     private int totalHeight;
     private ArrayList<Integer> data = new ArrayList<Integer>();
     private ArrayList<Integer> data1 = new ArrayList<Integer>();
     private ArrayList<String> resultList = new ArrayList<String>();
-    private Intent intent, intentForLists;
+    private LinkedHashMap<String,Object> newMap = new LinkedHashMap<String,Object>();
+    private Intent intent, intentForLists, intentForSettings;
     private String section, nameList;
-    private Map<String, Object> myLists = new HashMap<>();
+    private LinkedHashMap<String, Object> myLists = new LinkedHashMap<>();
     private Toolbar toolbar;
-    private User user1;
+    private User person;
     private FirebaseDatabase database;
     private FirebaseUser user;
-    private DatabaseReference ref;
+    private DatabaseReference ref, reference;
     private Handler handler;
-
+    private boolean start = true;
+    private Map<String,Lista> allLists= new HashMap<>();
+    private String actualList = "";
+    private ChildEventListener listEvent;
+    private Long realTime;
+    private boolean hasChange = false;
+    private Map<String, Object> m = new LinkedHashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_window);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        user1 = new User();
         intentForLists = new Intent("eventLists");
-
-        myLists.put("Home", list);
-        myLists.put("Car", new Lista());
-        nameList = "Home";
-        setTitleToolBar("Home");
-        /**
-        for(String key: myLists.keySet()){
-            //saveInTheCloud(myLists.get(key));
-
-        }
-        */
-
+        intentForSettings = new Intent("eventSettings");
         frau = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         user = frau.getCurrentUser();
         ref = database.getReference();
+        realTime = 00000000001L;
+        person = new User(user.getEmail(), user.getUid());
+
+        ref.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if( (!dataSnapshot.hasChild(person.getEmail())) && person.getMyLists().size() == 0){
+                    Long time = System.nanoTime();
+                    person.addToMyLists(time.toString(), "Home");
+                    ref.child("Users").child(person.getEmail()).setValue(person);
+                    Lista nueva = new Lista(person.getEmail(), "Home");
+                    ArrayList<Integer> a = new ArrayList();
+                    a.add(2131361856);
+                    ArrayList<Integer> b = new ArrayList();
+                    b.add(2131230844);
+                    ArrayList<Integer> c = new ArrayList();
+                    c.add(2131230845);
+                    ArrayList<String> d = new ArrayList();
+                    d.add("m_and_c");
+                    //An example:
+                    nueva.setId(a);
+                    nueva.setArray(b);
+                    nueva.setArrayw(c);
+                    nueva.setSection(d);
+                    myLists.put(time.toString(), nueva);
+                    ref.child("Lists").child(time.toString()).setValue(nueva);
+                }
+                ref.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        ref.child("Users").child(person.getEmail()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                if(dataSnapshot.getKey().equals("myLists")){
+                    for (DataSnapshot ds: dataSnapshot.getChildren()) {
+                        person.addToMyLists(ds.getKey(), (String) ds.getValue());
+                        if(start){
+                            actualList = ds.getKey();
+                            nameList = (String) ds.getValue();
+                            start = false;
+                            childEventListener();
+                            reference.addChildEventListener(listEvent);
+                            refreshMyList(list.getList());
+                        }
+
+                    }
+
+                }
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                if(dataSnapshot.getKey().equals("myLists")){
+                    person.setMyLists((Map<String, String>) dataSnapshot.getValue());
+                    //Cual me cambiaste?
+
+                    if(!((Map<String, String>) dataSnapshot.getValue()).containsKey(actualList)){
+                        Toast.makeText(MainWindow.this, "You've been removed from one of the lists", Toast.LENGTH_SHORT).show();
+                        Map<String, String> a = person.getMyLists();
+                        for (String key : a.keySet()) {
+                            Log.v("TENEMOOS:", key+"++++actualList:"+a.get(key));
+                            //list = (Lista) myLists.get(key);
+                            actualList = key;
+                            nameList = person.getMyLists().get(key);
+                            childEventListener();
+                            reference.addChildEventListener(listEvent);
+                            break;
+                        }
+
+                        setTitleToolBar(nameList);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        setTitleToolBar(nameList);
 
         handler = new Handler();
         handler.postDelayed(r, 10000);
+
 
         f_and_v = (ImageButton) findViewById(R.id.f_and_v);
         b_and_p = (ImageButton) findViewById(R.id.b_and_p);
@@ -120,9 +230,12 @@ public class MainWindow extends AppCompatActivity
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver2, new IntentFilter("eventLists"));
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageSettings, new IntentFilter("eventSettings"));
+
         in = new Intent(MainWindow.this, SFV.class);
 
         intentForLists = new Intent(MainWindow.this, MyLists.class);
+        intentForSettings = new Intent(MainWindow.this, Settings.class);
 
         //dr1.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -142,8 +255,229 @@ public class MainWindow extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
     }
 
+
+
+    private void childEventListener() {
+        reference = ref.child("Lists").child(actualList);
+        list = new Lista();
+        listEvent = new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                String sg = dataSnapshot.getKey();
+
+                if (sg.equals("id")) {
+                    ArrayList<Long> a = (ArrayList<Long>) dataSnapshot.getValue();
+                    ArrayList<Integer> b = new ArrayList();
+                    int sz = a.size();
+
+                    for(int i=0; i<sz; i++){
+                        b.add((int) (long) a.get(i));
+
+                    }
+                    list.setId(b);
+                } else if (sg.equals("list")) {
+                    ArrayList<Long> a = (ArrayList<Long>) dataSnapshot.getValue();
+                    ArrayList<Integer> b = new ArrayList();
+                    int sz = a.size();
+
+                    for(int i=0; i<sz; i++){
+                        b.add((int) (long) a.get(i));
+
+                    }
+                    list.setArray(b);
+                } else if (sg.equals("listw")) {
+                    ArrayList<Long> a = (ArrayList<Long>) dataSnapshot.getValue();
+                    ArrayList<Integer> b = new ArrayList();
+                    int sz = a.size();
+
+                    for(int i=0; i<sz; i++){
+                        b.add((int) (long) a.get(i));
+
+                    }
+                    list.setArrayw(b);
+
+                } else if (sg.equals("section")) {
+                    Log.v(sg, "***VALUE_sTRING*****"+dataSnapshot.getValue());
+                    list.setSection((ArrayList<String>) dataSnapshot.getValue());
+                } else if (sg.equals("time")){
+                    //fireCloud.setTime((Long) ds.getValue());
+                    realTime = (Long) dataSnapshot.getValue();
+                    list.setTime(realTime);
+                    
+                } else if (sg.equals("nameList")){
+                    list.setNameList((String) dataSnapshot.getValue());
+                    nameList = (String) dataSnapshot.getValue();
+
+                }else if (sg.equals("admin")){
+                    list.setAdmin((String) dataSnapshot.getValue());
+
+                } else if(sg.equals("users")){
+                    list.setUsers((ArrayList<String>) dataSnapshot.getValue());
+                    myLists.put(dataSnapshot.getKey(), list);
+                    setTitleToolBar(nameList);
+                    refreshMyList(list.getList());
+                }
+
+                whatIsInTheList(list);
+
+            }
+
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                String sg = dataSnapshot.getKey();
+
+                if (sg.equals("id")) {
+                    ArrayList<Long> a = (ArrayList<Long>) dataSnapshot.getValue();
+                    ArrayList<Integer> b = new ArrayList();
+                    int sz = a.size();
+
+                    for(int i=0; i<sz; i++){
+                        b.add((int) (long) a.get(i));
+
+                    }
+                    newList.setId(b);
+
+                    list.setId(b);
+                } else if (sg.equals("list")) {
+                    ArrayList<Long> a = (ArrayList<Long>) dataSnapshot.getValue();
+                    ArrayList<Integer> b = new ArrayList();
+                    int sz = a.size();
+
+                    for(int i=0; i<sz; i++){
+                        b.add((int) (long) a.get(i));
+
+                    }
+                    newList.setArray(b);
+
+                    list.setArrayw(b);
+                } else if (sg.equals("listw")) {
+                    ArrayList<Long> a = (ArrayList<Long>) dataSnapshot.getValue();
+                    ArrayList<Integer> b = new ArrayList();
+                    int sz = a.size();
+
+                    for(int i=0; i<sz; i++){
+                        b.add((int) (long) a.get(i));
+
+                    }
+                    newList.setArrayw(b);
+
+                    list.setArrayw(b);
+                } else if (sg.equals("section")) {
+                    newList.setSection((ArrayList<String>) dataSnapshot.getValue());
+                    list.setSection((ArrayList<String>) dataSnapshot.getValue());
+                    hasChange = true;
+                } else if (sg.equals("time")){
+
+                    list.setTime((Long) dataSnapshot.getValue());
+                    //setTitleToolBar(list.getNameList());
+                    //nameList = list.getNameList();
+                    if(hasChange){
+                        hasChange = false;
+
+                        list.setId(newList.getId());
+                        list.setArray(newList.getList());
+                        list.setArrayw(newList.getListw());
+                        list.setSection(newList.getSection());
+
+                        refreshMyList(newList.getList());
+                    }
+
+                    realTime = (Long)dataSnapshot.getValue();
+                    Log.v(sg, "Time has changed+++++++++");
+                    if ((Long)dataSnapshot.getValue() > list.getTime() ){
+                        Log.v(sg, "***VALUE_sTRING*****");
+
+                        //list = newList;
+
+                        /**
+                        if(newList.getId().size() != 0) {
+                            list.setId(newList.getId());
+                            list.setArray(newList.getList());
+                            list.setArrayw(newList.getListw());
+                            list.setSection(newList.getSection());
+                            list.setNameList(newList.getNameList());
+
+                            list.setTime((Long) dataSnapshot.getValue());
+                            realTime = list.getTime();
+                            refreshMyList(list.getList());
+                        }
+
+                        //setTitleToolBar(newList.getNameList());
+                         **/
+                    }
+
+                } else if (sg.equals("admin")){
+                    newList.setAdmin((String) dataSnapshot.getValue());
+
+                } else if (sg.equals("nameList") ){
+                    newList.setNameList((String) dataSnapshot.getValue());
+                    nameList = (String) dataSnapshot.getValue();
+                    list.setNameList(nameList);
+                    //myLists.put(actualList)
+                    setTitleToolBar(nameList);
+
+                }else if(sg.equals("users") && realTime > list.getTime()){
+                    Log.v(sg, "Users have changed");
+                    ArrayList<String> u = (ArrayList<String>) dataSnapshot.getValue();
+                    if(u.contains(person.getEmail())){
+                        list.setTime(realTime);
+                        list.setUsers((ArrayList<String>) dataSnapshot.getValue());
+                        //myLists.put(dataSnapshot.getKey(), list);
+                        setTitleToolBar(nameList);
+                    }else{
+                        ArrayList<String> names = new ArrayList<>();
+                        ArrayList<String> keyLists = new ArrayList<>();
+                        Map<String, String> map = person.getMyLists();
+                        for(String key: map.keySet()){
+                            names.add(map.get(key));
+                            keyLists.add(key);
+                        }
+
+                        intentForLists.putStringArrayListExtra("listNames", names);
+                        intentForLists.putStringArrayListExtra("keyLists", keyLists);
+
+                        startActivityForResult(intentForLists, 1);
+                    }
+
+
+                }
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+
+    }
+
+
+    private void whatIsInTheList(Lista list) {
+        ArrayList<String> a= (ArrayList) list.getSection();
+        for (int i=0;i<a.size();i++){
+            Log.v("IT HAS:", a.get(i));
+        }
+    }
 
 
     final Runnable r = new Runnable() {
@@ -156,10 +490,21 @@ public class MainWindow extends AppCompatActivity
     };
 
     private void updateFirebase(){
-        String id = user.getUid();
-        ref.child(id).child(nameList).setValue(list);
+        //String id = user.getUid();
+        //ref.child("Lists").child(id).child(nameList).setValue(list);
+        //revisar si la lista ha cambiado
+        ref.child("Lists").child(actualList).setValue(list);
+
 
     }
+
+
+    private BroadcastReceiver mMessageSettings = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
+    };
 
     private BroadcastReceiver mMessageReceiver2 = new BroadcastReceiver() {
         @Override
@@ -168,6 +513,7 @@ public class MainWindow extends AppCompatActivity
 
         }
     };
+
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -220,6 +566,12 @@ public class MainWindow extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            intentForSettings.putExtra("admin", list.getAdmin());
+            intentForSettings.putExtra("nameList", nameList);
+            intentForSettings.putStringArrayListExtra("users", new ArrayList<String>(list.getUsers()));
+            intentForSettings.putExtra("lock",person.getEmail().equals(list.getAdmin()));
+            startActivityForResult(intentForSettings, 5);
+
             return true;
         }
 
@@ -237,15 +589,26 @@ public class MainWindow extends AppCompatActivity
         if (id == R.id.nav_gallery) {
             //Here we show the list
             ArrayList<String> names = new ArrayList<>();
+            ArrayList<String> keyLists = new ArrayList<>();
+            Map<String, String> map = person.getMyLists();
 
-            for(String key: myLists.keySet()){
-                names.add(key);
+            Log.v("PASANDO QUE ESTA ?", "PASANDO¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡");
+
+
+            for(final String key: map.keySet()){
+                names.add(map.get(key));
+                keyLists.add(key);
+                ArrayList<String> l = new ArrayList<>((ArrayList<String>) m.get(key));
+                intentForLists.putStringArrayListExtra(key,l);
 
             }
 
             intentForLists.putStringArrayListExtra("listNames", names);
+            intentForLists.putStringArrayListExtra("keyLists", keyLists);
+
             startActivityForResult(intentForLists, 1);
             drawer.closeDrawer(GravityCompat.START);
+
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -266,27 +629,195 @@ public class MainWindow extends AppCompatActivity
         return false;
     }
 
+    public ArrayList<String> getEmailsFromAllTheLists(String key) {
+        final ArrayList<String> emailsInList = new ArrayList<>();
+
+        ref.child("Lists").child(key).child("users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.v("QUE ESTA PASANDO?", "QUE ESTÄ PASANDO????????????");
+                emailsInList.add((String) dataSnapshot.getValue());
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return emailsInList;
+
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultcode, Intent data){
+        if(resultcode == 22){
+            if(list.getAdmin().equals(person.getEmail())){
+                ArrayList<String> m = new ArrayList<>(list.getUsers());
+                for(int i = 0; i<m.size(); i++){
+                    ref.child("Users").child(m.get(i)).child("myLists").child(actualList).removeValue();
 
-        if(requestCode == 1){
+                }
+                ref.child("Lists").child(actualList).removeValue();
+
+                person.deleteFromMyLists(Long.valueOf(actualList));
+                myLists.remove(actualList);
+
+                Map<String, String> a = person.getMyLists();
+
+                for (String key : a.keySet()) {
+                    Log.v("TENEMOOS:", key+"++++actualList:"+a.get(key));
+                    //list = (Lista) myLists.get(key);
+                    actualList = key;
+                    nameList = person.getMyLists().get(key);
+                    childEventListener();
+                    reference.addChildEventListener(listEvent);
+                    break;
+                }
+
+                setTitleToolBar(nameList);
+                //refreshMyList(list.getList());
+
+            }else{
+                ref.child("Lists").child(actualList).child("users").child(person.getEmail()).removeValue();
+                ref.child("Users").child(person.getEmail()).child("myLists").child(actualList).removeValue();
+
+                for (String key : myLists.keySet()) {
+                    list = (Lista) myLists.get(key);
+                    actualList = key;
+                    nameList = list.getNameList();
+                    break;
+                }
+                setTitleToolBar(nameList);
+                refreshMyList(list.getList());
+            }
+
+
+        }
+
+        if(resultcode == 5){
+            if(!data.getStringExtra("nameList").equals(list.getNameList())){
+                list.setNameList(data.getStringExtra("nameList"));
+                setTitleToolBar(data.getStringExtra("nameList"));
+                person.getMyLists().put(actualList, data.getStringExtra("nameList"));
+                nameList = data.getStringExtra("nameList");
+                ArrayList<String> m = new ArrayList<>(list.getUsers());
+
+                for(int i = 0; i<m.size(); i++){
+                    ref.child("Users").child(m.get(i)).child("myLists").child(actualList).setValue(data.getStringExtra("nameList"));
+                }
+
+                list.setTime(System.nanoTime());
+                updateFirebase();
+
+            }
+            //Who has been removed??
+            ArrayList<String> p = new ArrayList<>(list.getUsers());
+            ArrayList<String> u = data.getStringArrayListExtra("users");
+
+            boolean check = false;
+
+            for (int i = 0; i<p.size(); i++){
+                for (int j = 0; j<u.size(); j++){
+                    if(p.get(i).equals(u.get(j))){
+                        check = true;
+                        break;
+                    }else{
+                        check = false;
+                    }
+                }
+                if(!check){
+                    Log.v("IOO", "IIIIIIIIIIIIIIIIIIIIIIIII*******");
+                    ref.child("Users").child(p.get(i)).child("myLists").child(actualList).removeValue();
+                }
+            }
+
+            check=false;
+            p = data.getStringArrayListExtra("users");
+            u = new ArrayList<>(list.getUsers());
+            if(p.size() == u.size()){
+                for (int i = 0; i<p.size(); i++){
+                    if(!p.get(i).equals(u.get(i))){
+                        list.setUsers(p);
+                        list.setTime(System.nanoTime());
+                        updateFirebase();
+
+                        break;
+                    }
+                }
+            }
+
+
+            Log.v("IOO", "IIIIIIIIIIIIIIIIIIIIIIIII*******"+p.size());
+            for (int i = 0; i<p.size(); i++){
+                for (int j = 0; j<u.size(); j++){
+                    if(p.get(i).equals(u.get(j))){
+                        check = true;
+                        break;
+                    }else{
+                        check = false;
+                    }
+                }
+                if(!check){
+                    Log.v("IOO", "IIIIIIIIIIIIIIIIIIIIIIIII*******");
+                    ref.child("Users").child(p.get(i)).child("myLists").child(actualList).push();
+                    ref.child("Users").child(p.get(i)).child("myLists").child(actualList).setValue(data.getStringExtra("nameList"));
+                }
+            }
+
+            if(!false){
+                list.setUsers(p);
+                list.setTime(System.nanoTime());
+                updateFirebase();
+            }
+            check = false;
+
+        }
+
+        if(resultcode == 3){
             if(data.getBooleanExtra("isNew", false)){
                 int size = (data.getStringArrayListExtra("newName")).size();
                 for(int i = 0; i<size; i++){
-                    myLists.put(data.getStringArrayListExtra("newName").get(i), new Lista());
+                    String nameLst = data.getStringArrayListExtra("newName").get(i);
+                    String key = data.getStringArrayListExtra("newKeys").get(i);
+                    Lista newList = new Lista(person.getEmail(), nameLst);
+                    person.addToMyLists(key, nameLst);
+                    myLists.put(key, newList);
+                    ref.child("Lists").child(key).setValue(newList);
+                    ref.child("Users").child(person.getEmail()).setValue(person);
                 }
 
                 data.putExtra("isNew",false);
             }
             setTitleToolBar(data.getStringExtra("listName"));
-
+            refreshMyList(list.getList());
             nameList = (String) data.getStringExtra("listName");
-            list = (Lista) myLists.get(nameList);
+            actualList = (String) data.getStringExtra("keyList");
+
+            childEventListener();
+            reference.addChildEventListener(listEvent);
 
             resultList = data.getStringArrayListExtra("resultList");
 
-            refreshMyList(list.getList());
             intentForLists.putExtra("lock", false);
+
         }
     }
 
@@ -367,6 +898,7 @@ public class MainWindow extends AppCompatActivity
         broadAddDelete(list.getList().get(i), list.getId().get(i));
 
         list.delete(i);
+        list.setTime(System.nanoTime());
 
         decreaseSizeBasket();
 
@@ -375,8 +907,11 @@ public class MainWindow extends AppCompatActivity
     }
 
     private void refreshMyList(ArrayList myList){
+        /**
+
+        **/
         //In case that we need to delete from myLists
-        if(resultList !=null) {
+        if(resultList != null) {
             for (String key : myLists.keySet()) {
                 for(int i = 0 ; i<resultList.size() ; i++){
                     if(key.equals(resultList.get(i))){
@@ -388,10 +923,23 @@ public class MainWindow extends AppCompatActivity
 
         listAdapter = new ListAdapter(MainWindow.this, myList);
         gv.setAdapter(listAdapter);
+
+        updateAllUsers();
+    }
+
+    public void updateAllUsers(){
+        Map<String, String> map = person.getMyLists();
+        m = new LinkedHashMap<>();
+
+        for(String key: map.keySet()){
+            m.put(key, getEmailsFromAllTheLists(key));
+
+        }
     }
 
     private void deleteElement(Integer image, Integer imagew, Integer id, String section){
         list.delete(image, imagew, id, section);
+        list.setTime(System.nanoTime());
 
         decreaseSizeBasket();
 
@@ -401,6 +949,7 @@ public class MainWindow extends AppCompatActivity
 
     private void addElement(Integer element, Integer elementw, Integer id, String section){
         list.save(element, elementw, id, section);
+        list.setTime(System.nanoTime());
 
         broadAddDelete(elementw, id);
 
@@ -450,4 +999,6 @@ public class MainWindow extends AppCompatActivity
         getSupportActionBar().setTitle(name);
 
     }
+
+
 }

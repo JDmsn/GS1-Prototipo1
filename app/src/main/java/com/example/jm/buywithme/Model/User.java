@@ -1,16 +1,41 @@
 package com.example.jm.buywithme.Model;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by jm on 17.12.23.
  */
 
 public class User {
-    private String email = "";
-    private String age = "";
-    private String country = "";
 
-    public User(){
+    private String name = "";
+    private String key;
+    private String email;
+    private Map<String, String> myLists = new LinkedHashMap<>();
 
+    public User(String email, String key){
+        this.email = email.substring(0, email.length() - 4);
+        this.key = key;
+        name = email.substring(0, email.length() - 10);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getEmail() {
@@ -21,19 +46,21 @@ public class User {
         this.email = email;
     }
 
-    public String getAge() {
-        return age;
+    public void setMyLists(Map<String, String> myLists){
+        this.myLists = myLists;
+
     }
 
-    public void setAge(String age) {
-        this.age = age;
+    public Map<String, String> getMyLists() {
+        return myLists;
     }
 
-    public String getCountry() {
-        return country;
+    public void addToMyLists(String list, String name) {
+        myLists.put(list, name);
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void deleteFromMyLists(Long list){
+
+        myLists.remove(String.valueOf(list));
     }
 }
