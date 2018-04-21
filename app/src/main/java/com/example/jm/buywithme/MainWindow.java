@@ -78,6 +78,7 @@ public class MainWindow extends AppCompatActivity
     private Long realTime;
     private boolean hasChange = false;
     private Map<String, Object> m = new LinkedHashMap<>();
+    private Map<String, Object> dabaseReferences = new LinkedHashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,11 +109,24 @@ public class MainWindow extends AppCompatActivity
                     c.add(2131230845);
                     ArrayList<String> d = new ArrayList();
                     d.add("m_and_c");
+
+                    ArrayList<String> q = new ArrayList();
+                    q.add("0");
+                    ArrayList<String> de = new ArrayList();
+                    de.add("n");
+                    ArrayList<String> o = new ArrayList();
+                    o.add(person.getEmail() + ".com");
+
                     //An example:
                     nueva.setId(a);
                     nueva.setArray(b);
                     nueva.setArrayw(c);
                     nueva.setSection(d);
+
+                    nueva.setQuantity(q);
+                    nueva.setDescription(de);
+                    nueva.setOwner(o);
+
                     myLists.put(time.toString(), nueva);
                     ref.child("Lists").child(time.toString()).setValue(nueva);
                 }
@@ -265,7 +279,6 @@ public class MainWindow extends AppCompatActivity
     }
 
 
-
     private void childEventListener() {
 
         reference = ref.child("Lists").child(actualList);
@@ -275,7 +288,7 @@ public class MainWindow extends AppCompatActivity
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                Log.v("EYY", "EL VALOR DESPUES DE CLICAR ES:*******"+nameList + actualList);
+
                 String sg = dataSnapshot.getKey();
 
                 if (sg.equals("id")) {
@@ -328,6 +341,14 @@ public class MainWindow extends AppCompatActivity
                     myLists.put(dataSnapshot.getKey(), list);
                     setTitleToolBar(nameList);
                     refreshMyList(list.getList());
+                } else if(sg.equals("description")){
+                    list.setDescription((ArrayList<String>) dataSnapshot.getValue());
+
+                }else if(sg.equals("owner")){
+                    list.setOwner((ArrayList<String>) dataSnapshot.getValue());
+
+                }else if(sg.equals("quantity")){
+                    list.setQuantity((ArrayList<String>) dataSnapshot.getValue());
                 }
 
             }
@@ -337,12 +358,14 @@ public class MainWindow extends AppCompatActivity
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 String sg = dataSnapshot.getKey();
 
+                Log.v("EYY", "EL VALOR DESPUES DE CLICAR ES:*******"+reference+ "," + dataSnapshot.getRef());
+
                 if (sg.equals("id")) {
                     ArrayList<Long> a = (ArrayList<Long>) dataSnapshot.getValue();
                     ArrayList<Integer> b = new ArrayList();
                     int sz = a.size();
 
-                    for(int i=0; i<sz; i++){
+                    for (int i = 0; i < sz; i++) {
                         b.add((int) (long) a.get(i));
 
                     }
@@ -354,7 +377,7 @@ public class MainWindow extends AppCompatActivity
                     ArrayList<Integer> b = new ArrayList();
                     int sz = a.size();
 
-                    for(int i=0; i<sz; i++){
+                    for (int i = 0; i < sz; i++) {
                         b.add((int) (long) a.get(i));
 
                     }
@@ -366,7 +389,7 @@ public class MainWindow extends AppCompatActivity
                     ArrayList<Integer> b = new ArrayList();
                     int sz = a.size();
 
-                    for(int i=0; i<sz; i++){
+                    for (int i = 0; i < sz; i++) {
                         b.add((int) (long) a.get(i));
 
                     }
@@ -377,14 +400,14 @@ public class MainWindow extends AppCompatActivity
                     newList.setSection((ArrayList<String>) dataSnapshot.getValue());
                     list.setSection((ArrayList<String>) dataSnapshot.getValue());
                     hasChange = true;
-                } else if (sg.equals("time")){
+                } else if (sg.equals("time")) {
 
                     list.setTime((Long) dataSnapshot.getValue());
                     //setTitleToolBar(list.getNameList());
                     //nameList = list.getNameList();
 
-                    Log.v(actualList, "WHY CHANGE MY OTHER LIST??******+++"+nameList);
-                    if(hasChange){
+                    Log.v(actualList, "WHY CHANGE MY OTHER LIST??******+++" + nameList);
+                    if (hasChange) {
                         hasChange = false;
 
                         list.setId(newList.getId());
@@ -395,53 +418,53 @@ public class MainWindow extends AppCompatActivity
                         refreshMyList(newList.getList());
                     }
 
-                    realTime = (Long)dataSnapshot.getValue();
+                    realTime = (Long) dataSnapshot.getValue();
                     Log.v(sg, "Time has changed+++++++++");
-                    if ((Long)dataSnapshot.getValue() > list.getTime() ){
+                    if ((Long) dataSnapshot.getValue() > list.getTime()) {
                         Log.v(sg, "***VALUE_sTRING*****");
 
                         //list = newList;
 
                         /**
-                        if(newList.getId().size() != 0) {
-                            list.setId(newList.getId());
-                            list.setArray(newList.getList());
-                            list.setArrayw(newList.getListw());
-                            list.setSection(newList.getSection());
-                            list.setNameList(newList.getNameList());
+                         if(newList.getId().size() != 0) {
+                         list.setId(newList.getId());
+                         list.setArray(newList.getList());
+                         list.setArrayw(newList.getListw());
+                         list.setSection(newList.getSection());
+                         list.setNameList(newList.getNameList());
 
-                            list.setTime((Long) dataSnapshot.getValue());
-                            realTime = list.getTime();
-                            refreshMyList(list.getList());
-                        }
+                         list.setTime((Long) dataSnapshot.getValue());
+                         realTime = list.getTime();
+                         refreshMyList(list.getList());
+                         }
 
-                        //setTitleToolBar(newList.getNameList());
+                         //setTitleToolBar(newList.getNameList());
                          **/
                     }
 
-                } else if (sg.equals("admin")){
+                } else if (sg.equals("admin")) {
                     newList.setAdmin((String) dataSnapshot.getValue());
 
-                } else if (sg.equals("nameList") ){
+                } else if (sg.equals("nameList")) {
                     newList.setNameList((String) dataSnapshot.getValue());
                     nameList = (String) dataSnapshot.getValue();
                     list.setNameList(nameList);
                     //myLists.put(actualList)
                     setTitleToolBar(nameList);
 
-                }else if(sg.equals("users") && realTime > list.getTime()){
+                } else if (sg.equals("users") && realTime > list.getTime()) {
                     Log.v(sg, "Users have changed");
                     ArrayList<String> u = (ArrayList<String>) dataSnapshot.getValue();
-                    if(u.contains(person.getEmail())){
+                    if (u.contains(person.getEmail())) {
                         list.setTime(realTime);
                         list.setUsers((ArrayList<String>) dataSnapshot.getValue());
                         //myLists.put(dataSnapshot.getKey(), list);
                         setTitleToolBar(nameList);
-                    }else{
+                    } else {
                         ArrayList<String> names = new ArrayList<>();
                         ArrayList<String> keyLists = new ArrayList<>();
                         Map<String, String> map = person.getMyLists();
-                        for(String key: map.keySet()){
+                        for (String key : map.keySet()) {
                             names.add(map.get(key));
                             keyLists.add(key);
                         }
@@ -452,7 +475,15 @@ public class MainWindow extends AppCompatActivity
                         startActivityForResult(intentForLists, 1);
                     }
 
+                } else if(sg.equals("description")){
+                    list.setDescription((ArrayList<String>) dataSnapshot.getValue());
 
+                }else if(sg.equals("owner")){
+                    list.setOwner((ArrayList<String>) dataSnapshot.getValue());
+
+                }else if(sg.equals("quantity")){
+                    list.setQuantity((ArrayList<String>) dataSnapshot.getValue());
+                    refreshMyList(list.getList());
                 }
 
             }
@@ -528,11 +559,14 @@ public class MainWindow extends AppCompatActivity
             Integer id = data.get(2);
             int lock = data.get(3);
             section = in.getStringExtra("section");
+            String q = "0";
+            String d = "n";
+            String o = person.getEmail() + ".com";
 
             if(lock == 1){
-                addElement(image, imagew, id, section);
+                addElement(image, imagew, id, section, q, d, o);
             }else{
-                deleteElement(image, imagew, id, section);
+                deleteElement(image, imagew, id, section, q, d, o);
 
             }
 
@@ -806,41 +840,16 @@ public class MainWindow extends AppCompatActivity
 
                 data.putExtra("isNew",false);
             }
-            /**
-            setTitleToolBar(data.getStringExtra("listName"));
 
-            nameList = (String) data.getStringExtra("listName");
-            actualList = (String) data.getStringExtra("keyList");
-
-            childEventListener();
-            reference.addChildEventListener(listEvent);
-            myLists.put(actualList, list);
-
-
-            resultList = data.getStringArrayListExtra("resultList");
-
-            intentForLists.putExtra("lock", false);
-
-
-            list = (Lista) myLists.get(actualList);
-
-            refreshMyList(list.getList());
-            **/
             reference.removeEventListener(listEvent);
-            //refreshMyList(((Lista)myLists.get(actualList)).getList());
+
             setTitleToolBar(data.getStringExtra("listName"));
             nameList = data.getStringExtra("listName");
             actualList = data.getStringExtra("keyList");
-            Log.v("IOO", "IIIIIIIIIIIIIIIIII++++++IIIIIII*******"+nameList + actualList);
             childEventListener();
             reference.addChildEventListener(listEvent);
-
-            Log.v("IOO", "IIIIIIIIIIIIIIIIII++++++IIIIIII*******"+list.getSection());
-
             resultList = data.getStringArrayListExtra("resultList");
             intentForLists.putExtra("lock", false);
-
-            //refreshMyList(list.getList());
 
         }
     }
@@ -926,7 +935,18 @@ public class MainWindow extends AppCompatActivity
 
         decreaseSizeBasket();
 
-        listAdapter = new ListAdapter(MainWindow.this, list.getList());
+        //myList is an ArrayList of INTEGER, so we must parse it to ArrayList of String
+        ArrayList<Integer> myList = list.getList();
+        ArrayList<String> theList = new ArrayList<>();
+        ArrayList<String> theQuantity = new ArrayList<>(list.getQuantity());
+
+        for(int j = 0; j<myList.size(); j++){
+            theList.add(myList.get(j).toString());
+        }
+
+        theList.addAll(theList.size() , theQuantity);
+
+        listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
         updateFirebase();
     }
@@ -989,7 +1009,17 @@ public class MainWindow extends AppCompatActivity
             }
         }
 
-        listAdapter = new ListAdapter(MainWindow.this, myList);
+        //myList is an ArrayList of INTEGER, so we must parse it to ArrayList of String
+        ArrayList<String> theList = new ArrayList<>();
+        ArrayList<String> theQuantity = new ArrayList<>(list.getQuantity());
+
+        for(int i = 0; i<myList.size(); i++){
+            theList.add(myList.get(i).toString());
+        }
+
+        theList.addAll(theList.size() , theQuantity);
+
+        listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
         updateAllUsers();
     }
@@ -1004,26 +1034,49 @@ public class MainWindow extends AppCompatActivity
         }
     }
 
-    private void deleteElement(Integer image, Integer imagew, Integer id, String section){
-        list.delete(image, imagew, id, section);
+    private void deleteElement(Integer image, Integer imagew, Integer id, String section, String quantity, String description, String owner){
+        list.delete(image, imagew, id, section, quantity, description, owner);
         list.setTime(System.nanoTime());
 
         decreaseSizeBasket();
 
-        listAdapter = new ListAdapter(MainWindow.this, list.getList());
+        //myList is an ArrayList of INTEGER, so we must parse it to ArrayList of String
+        ArrayList<Integer> myList = list.getList();
+        ArrayList<String> theList = new ArrayList<>();
+        ArrayList<String> theQuantity = new ArrayList<>(list.getQuantity());
+
+        for(int i = 0; i<myList.size(); i++){
+            theList.add(myList.get(i).toString());
+        }
+
+        theList.addAll(theList.size() , theQuantity);
+
+
+        listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
         updateFirebase();
     }
 
-    private void addElement(Integer element, Integer elementw, Integer id, String section){
-        list.save(element, elementw, id, section);
+    private void addElement(Integer element, Integer elementw, Integer id, String section, String quantity, String description, String owner){
+        list.save(element, elementw, id, section, quantity, description, owner);
         list.setTime(System.nanoTime());
 
         broadAddDelete(elementw, id);
 
         increaseSizeBasket();
 
-        listAdapter = new ListAdapter(MainWindow.this, list.getList());
+        //myList is an ArrayList of INTEGER, so we must parse it to ArrayList of String
+        ArrayList<Integer> myList = list.getList();
+        ArrayList<String> theList = new ArrayList<>();
+        ArrayList<String> theQuantity = new ArrayList<>(list.getQuantity());
+
+        for(int i = 0; i<myList.size(); i++){
+            theList.add(myList.get(i).toString());
+        }
+
+        theList.addAll(theList.size() , theQuantity);
+
+        listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
         updateFirebase();
     }

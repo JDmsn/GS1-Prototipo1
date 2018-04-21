@@ -7,10 +7,24 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/tomato" />
+
+    <TextView
+        android:id="@+id/quantity"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_alignBottom="@+id/imageView1"
+        android:layout_alignEnd="@+id/imageView1"
+        android:layout_alignStart="@+id/imageView1"
+        android:layout_marginBottom="39dp"
+        android:text=""
+        android:textAlignment="center"
+        android:textColor="@android:color/background_light"
+        android:textSize="23dp" />
+
 
 </RelativeLayout>

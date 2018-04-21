@@ -17,8 +17,11 @@ public class Lista {
     private List<Integer> id = new ArrayList<>();
     private List<String> section = new ArrayList<>();
 
+    private List<String> quantity = new ArrayList<>();
+    private List<String> description = new ArrayList<>();
+    private List<String> owner = new ArrayList<>();
+
     public Lista(){
-        //Cambiado!!!
         time = 0L;
     }
 
@@ -60,12 +63,15 @@ public class Lista {
     }
 
 
-    public void save(Integer name, Integer namew, Integer id, String section){
+    public void save(Integer name, Integer namew, Integer id, String section, String quantity, String description, String owner){
         arrayw.add(namew);
         array.add(name);
         this.id.add(id);
         this.section.add(section);
 
+        this.quantity.add(quantity);
+        this.description.add(description);
+        this.owner.add(owner);
     }
 
     public boolean delete(int position){
@@ -74,6 +80,10 @@ public class Lista {
             array.remove(position);
             id.remove(position);
             section.remove(position);
+
+            this.quantity.remove(position);
+            this.description.remove(position);
+            this.owner.remove(position);
         }catch(Exception e){
 
             e.printStackTrace();
@@ -83,12 +93,16 @@ public class Lista {
         return false;
     }
 
-    public boolean delete(Integer name, Integer namew, Integer id, String section){
+    public boolean delete(Integer name, Integer namew, Integer id, String section, String quantity, String description, String owner){
         try{
             arrayw.remove(namew);
             array.remove(name);
             this.id.remove(id);
             this.section.remove(section);
+
+            this.quantity.remove(quantity);
+            this.description.remove(description);
+            this.owner.remove(owner);
         }catch(Exception e){
 
             e.printStackTrace();
@@ -103,7 +117,7 @@ public class Lista {
         for(int i=0; i<this.section.size(); i++){
             if(this.section.get(i).equals(section)){
                 //array, arrayw, id, section
-                sec.save(array.get(i), arrayw.get(i), id.get(i), section);
+                sec.save(array.get(i), arrayw.get(i), id.get(i), section, quantity.get(i), description.get(i), owner.get(i));
             }
         }
         return sec;
@@ -161,5 +175,31 @@ public class Lista {
 
     public void setNameList(String nameList) {
         this.nameList = nameList;
+    }
+
+
+
+    public List<String> getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(List<String> quantity) {
+        this.quantity = quantity;
+    }
+
+    public List<String> getDescription() {
+        return description;
+    }
+
+    public void setDescription(List<String> description) {
+        this.description = description;
+    }
+
+    public List<String> getOwner() {
+        return owner;
+    }
+
+    public void setOwner(List<String> owner) {
+        this.owner = owner;
     }
 }
