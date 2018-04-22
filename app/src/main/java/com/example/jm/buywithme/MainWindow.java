@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -64,7 +66,7 @@ public class MainWindow extends AppCompatActivity
     private ArrayList<Integer> data1 = new ArrayList<Integer>();
     private ArrayList<String> resultList = new ArrayList<String>();
     private LinkedHashMap<String,Object> newMap = new LinkedHashMap<String,Object>();
-    private Intent intent, intentForLists, intentForSettings;
+    private Intent intent, intentForLists, intentForSettings, intentEditProduct;
     private String section, nameList;
     private LinkedHashMap<String, Object> myLists = new LinkedHashMap<>();
     private Toolbar toolbar;
@@ -81,6 +83,7 @@ public class MainWindow extends AppCompatActivity
     private boolean hasChange = false;
     private Map<String, Object> m = new LinkedHashMap<>();
     private BiMap<String,Integer> bi = HashBiMap.create();
+    private EditText search;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,12 +92,14 @@ public class MainWindow extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         intentForLists = new Intent("eventLists");
         intentForSettings = new Intent("eventSettings");
+        intentEditProduct = new Intent("eventEditProduct");
         frau = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         user = frau.getCurrentUser();
         ref = database.getReference();
         realTime = 00000000001L;
         person = new User(user.getEmail(), user.getUid());
+        search = (EditText) findViewById(R.id.search);
 
 
 
@@ -167,12 +172,8 @@ public class MainWindow extends AppCompatActivity
                             refreshMyList(list.getList());
 
                         }
-
                     }
-
                 }
-
-
             }
 
             @Override
@@ -185,8 +186,6 @@ public class MainWindow extends AppCompatActivity
                         Toast.makeText(MainWindow.this, "You've been removed from one of the lists", Toast.LENGTH_SHORT).show();
                         Map<String, String> a = person.getMyLists();
                         for (String key : a.keySet()) {
-                            Log.v("TENEMOOS:", key+"++++actualList:"+a.get(key));
-                            //list = (Lista) myLists.get(key);
                             actualList = key;
                             nameList = person.getMyLists().get(key);
                             childEventListener();
@@ -254,7 +253,7 @@ public class MainWindow extends AppCompatActivity
         params.height = 330;
         gv.setLayoutParams(params);
         gv.requestLayout();
-
+        //registerForContextMenu(gv);
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("event"));
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver2, new IntentFilter("eventLists"));
@@ -265,6 +264,7 @@ public class MainWindow extends AppCompatActivity
 
         intentForLists = new Intent(MainWindow.this, MyLists.class);
         intentForSettings = new Intent(MainWindow.this, Settings.class);
+        intentEditProduct = new Intent(MainWindow.this, EditElement.class);
 
         //dr1.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -286,9 +286,40 @@ public class MainWindow extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        gv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+              @Override
+              public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                  Log.v("HA SIDO PULSADO:", "EN LA LISTA EL ELEMENTO:" + i);
 
+                  //enviar los datos al editar producto: imagen, nombre, cantidad, descripcion, propietario
+
+                  intentEditProduct.putExtra("image", Integer.toString(list.getList().get(i)));
+                  intentEditProduct.putExtra("nameProduct", list.getProductName().get(i));
+                  intentEditProduct.putExtra("quantity", list.getQuantity().get(i));
+                  intentEditProduct.putExtra("description", list.getDescription().get(i));
+                  intentEditProduct.putExtra("owner",list.getOwner().get(i));
+                  intentEditProduct.putExtra("pos", i);
+
+                  startActivityForResult(intentEditProduct, 9);
+
+                  return true;
+
+              }
+        });
     }
 
+    /**
+    @Override
+    public boolean onCreateOptionMenu(Menu menu){
+
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(, menu);
+
+        return super.onCreateOptionsMenu(menu);
+
+    }
+    **/
     private void fillBiMap() {
         bi.put("pear", 2131230961);
         bi.put("apple", 2131230810);
@@ -484,7 +515,7 @@ public class MainWindow extends AppCompatActivity
                     list.setTime((Long) dataSnapshot.getValue());
                     //setTitleToolBar(list.getNameList());
                     //nameList = list.getNameList();
-                    
+
                     if (hasChange) {
                         hasChange = false;
 
@@ -836,6 +867,7 @@ public class MainWindow extends AppCompatActivity
                 updateFirebase();
 
             }
+
             //Who has been removed??
             ArrayList<String> p = new ArrayList<>(list.getUsers());
             ArrayList<String> u = data.getStringArrayListExtra("users");
@@ -923,6 +955,16 @@ public class MainWindow extends AppCompatActivity
             resultList = data.getStringArrayListExtra("resultList");
             intentForLists.putExtra("lock", false);
 
+        }
+
+        if(resultcode == 9){
+            int pos = data.getIntExtra("pos", 0);
+            list.getQuantity().remove(pos);
+            list.getQuantity().add(pos, data.getStringExtra("quantity"));
+            list.getDescription().remove(pos);
+            list.getDescription().add(pos, data.getStringExtra("description"));
+            updateFirebase();
+            refreshMyList(list.getList());
         }
     }
 

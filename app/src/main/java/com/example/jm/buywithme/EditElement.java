@@ -1,56 +1,28 @@
-
-
-
 package com.example.jm.buywithme;
-import android.app.Dialog;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
+import android.widget.ImageView;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import android.graphics.Bitmap;
 /**
  * Created by jm on 18.4.19.
  */
 
 public class EditElement extends AppCompatActivity {
-    private Intent intent, intentForSettings;
-    private GridView gv;
+    private Intent intent;
     private Toolbar tb;
-    private ArrayList<String> listNames = new ArrayList<>();
-    private ArrayList<String> listKeys = new ArrayList<>();
-    private ArrayList<String> newNames = new ArrayList<>();
-    private ArrayList<String> newKeys = new ArrayList<>();
-    private ListAdapter2 listAdapter;
-    private Button newList;
-    private Dialog custom;
-    private ArrayList<String> resultList = new ArrayList<>();
-    private FirebaseDatabase database;
-    private FirebaseUser user;
-    private FirebaseAuth frau;
-    private DatabaseReference ref, reference;
-
+    private ImageView pic;
+    private EditText inputQ, inputD, inputA;
+    private Button acept,cancel;
+    private Integer im;
+    private String nameProduct, quantity, description, owner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +32,66 @@ public class EditElement extends AppCompatActivity {
         setSupportActionBar(tb);
         getSupportActionBar().setTitle("Edit product");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        pic = (ImageView) findViewById(R.id.image);
+        inputQ = (EditText) findViewById(R.id.inputQuantity);
+        inputD = (EditText) findViewById(R.id.inputDescription);
+        inputA = (EditText) findViewById(R.id.inputAddedBy);
+        acept = (Button) findViewById(R.id.acceptButton);
+        cancel = (Button) findViewById(R.id.cancelButton);
 
         intent = getIntent();
+        im = Integer.valueOf(intent.getStringExtra("image"));
+
+        nameProduct = intent.getStringExtra("nameProduct");
+        quantity = intent.getStringExtra("quantity");
+        description = intent.getStringExtra("description");
+        owner = intent.getStringExtra("owner");
+
+        pic.setImageResource(im);
+
+
+        if(!"0".equals(quantity)){
+            inputQ.setHint(quantity);
+        }
+
+        if(!"n".equals(description)){
+            inputD.setHint(description);
+        }
+
+        inputA.setEnabled(false);
+        inputA.setText(owner);
+
+
+        acept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!inputQ.getText().toString().equals("")){
+                    intent.putExtra("quantity", inputQ.getText().toString());
+                }else{
+                    intent.putExtra("quantity", "0");
+                }
+
+                if(!inputD.getText().toString().equals("")){
+                    intent.putExtra("description", inputD.getText().toString());
+
+                }else{
+                    intent.putExtra("description", "n");
+                }
+
+                setResult(9, intent);
+                finish();
+            }
+        });
+
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+
         /**
          listNames = intent.getStringArrayListExtra("listNames");
          listKeys = intent.getStringArrayListExtra("keyLists");

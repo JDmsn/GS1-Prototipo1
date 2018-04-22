@@ -88,13 +88,6 @@ public class Settings2 extends AppCompatActivity {
         participants.setLayoutParams(lp);
         participants.setAdapter(usersAdapter);
 
-        //Section for add participants (Research how to do it)
-        //UsersAdapter usersAdapter2 = new UsersAdapter(Settings.this, newEmails, addParticipants, lock, true);
-        //ViewGroup.LayoutParams lp2 = (ViewGroup.LayoutParams) addParticipants.getLayoutParams();
-        //lp2.height = 135 * newEmails.size();
-        //addParticipants.setLayoutParams(lp2);
-        //addParticipants.setAdapter(usersAdapter2);
-
         saveNameList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,14 +146,6 @@ public class Settings2 extends AppCompatActivity {
 
 
     }
-    /**
-    @Override
-    public void onBackPressed(){
-        Log.v("we JUST FINISHEEED:", "···················*******ASDASDASASDAS****");
-        setResult(5, intent);
-        finish();
-    }
-    **/
 
     private void addToMyList(String email) {
         listUsers.add(email);
