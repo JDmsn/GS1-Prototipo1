@@ -40,6 +40,7 @@
         <activity android:name="com.example.jm.buywithme.MyLists"></activity>
         <activity android:name="com.example.jm.buywithme.Settings" android:parentActivityName=".MainWindow" android:windowSoftInputMode="stateHidden"></activity>
         <activity android:name="com.example.jm.buywithme.Settings2" android:parentActivityName=".MyLists" android:windowSoftInputMode="stateHidden"></activity>
+        <activity android:name="com.example.jm.buywithme.EditElement" android:parentActivityName=".MainWindow" android:windowSoftInputMode="stateHidden"></activity>
 
     </application>
 

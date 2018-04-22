@@ -21,20 +21,27 @@ public class ListAdapter extends ArrayAdapter<String> {
     private final Activity context;
     private final ArrayList<Integer> imageName = new ArrayList<>();
     private final ArrayList<String> quantity = new ArrayList<>();
+    private final ArrayList<String> productName = new ArrayList<>();
 
     public ListAdapter(Activity context, ArrayList<String> theList){
 
-        super(context, R.layout.list_items, theList.subList(0, theList.size()/2));
+        super(context, R.layout.list_items, theList.subList(0, theList.size()/3));
         this.context = context;
 
         //Dividir el array ->>>>>
-        for (int i = 0; i<(theList.size()/2); i++){
+        for (int i = 0; i<(theList.size()/3); i++){
             this.imageName.add(Integer.parseInt(theList.get(i)));
         }
 
-        int size = (theList.size()/2);
-        for (int i = size; i<theList.size(); i++){
+        int size = (theList.size()/3);
+        for (int i = size; i<theList.size() - size; i++){
             this.quantity.add(theList.get(i));
+        }
+
+        size = theList.size() - (theList.size()/3);
+        for (int i = size; i<theList.size(); i++){
+            this.productName.add(theList.get(i));
+            Log.v("EL NOMBRE DEL P:", "NOMBRE DEL PRODUCTO, NOMBRE:" + theList.get(i));
         }
 
     }

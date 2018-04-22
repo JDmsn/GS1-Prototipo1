@@ -29,6 +29,8 @@ import android.widget.Toast;
 import com.example.jm.buywithme.Model.Lista;
 import com.example.jm.buywithme.Model.ListAdapter;
 import com.example.jm.buywithme.Model.User;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -78,11 +80,12 @@ public class MainWindow extends AppCompatActivity
     private Long realTime;
     private boolean hasChange = false;
     private Map<String, Object> m = new LinkedHashMap<>();
-    private Map<String, Object> dabaseReferences = new LinkedHashMap<>();
+    private BiMap<String,Integer> bi = HashBiMap.create();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_window);
+        fillBiMap();
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         intentForLists = new Intent("eventLists");
         intentForSettings = new Intent("eventSettings");
@@ -93,6 +96,8 @@ public class MainWindow extends AppCompatActivity
         realTime = 00000000001L;
         person = new User(user.getEmail(), user.getUid());
 
+
+
         ref.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -101,6 +106,8 @@ public class MainWindow extends AppCompatActivity
                     person.addToMyLists(time.toString(), "Home");
                     ref.child("Users").child(person.getEmail()).setValue(person);
                     Lista nueva = new Lista(person.getEmail(), "Home");
+
+                    /**
                     ArrayList<Integer> a = new ArrayList();
                     a.add(2131361856);
                     ArrayList<Integer> b = new ArrayList();
@@ -117,6 +124,9 @@ public class MainWindow extends AppCompatActivity
                     ArrayList<String> o = new ArrayList();
                     o.add(person.getEmail() + ".com");
 
+                    ArrayList<String> pn = new ArrayList();
+                    pn.add(bi.inverse().get(2131230844));
+
                     //An example:
                     nueva.setId(a);
                     nueva.setArray(b);
@@ -126,6 +136,7 @@ public class MainWindow extends AppCompatActivity
                     nueva.setQuantity(q);
                     nueva.setDescription(de);
                     nueva.setOwner(o);
+                    **/
 
                     myLists.put(time.toString(), nueva);
                     ref.child("Lists").child(time.toString()).setValue(nueva);
@@ -278,6 +289,72 @@ public class MainWindow extends AppCompatActivity
 
     }
 
+    private void fillBiMap() {
+        bi.put("pear", 2131230961);
+        bi.put("apple", 2131230810);
+        bi.put("banana", 2131230816);
+        bi.put("carrot", 2131230838);
+        bi.put("garlic", 2131230901);
+        bi.put("grapes", 2131230908);
+        bi.put("peach", 2131230959);
+        bi.put("peper", 2131230963);
+
+        bi.put("bun", 2131230827);
+        bi.put("croissant", 2131230873);
+        bi.put("donut", 2131230887);
+        bi.put("muffin", 2131230940);
+        bi.put("pancake", 2131230957);
+        bi.put("pie", 2131230966);
+        bi.put("toast", 2131230982);
+        bi.put("bread", 2131230824);
+        bi.put("butter",2131230831);
+        bi.put("cheese",  2131230844);
+        bi.put("eggs", 2131230891);
+        bi.put("milk", 2131230937);
+        bi.put("yogurt", 2131230992);
+
+        bi.put("bacon", 2131230814);
+        bi.put("beef", 2131230820);
+        bi.put("chiken", 2131230846);
+        bi.put("fish", 2131230893);
+        bi.put("ham", 2131230910);
+        bi.put("hotdog", 2131230914);
+        bi.put("lobster",2131230933);
+        bi.put("oysters", 2131230955);
+        bi.put("shrimp", 2131230976);
+
+        bi.put("cake", 2131230834);
+        bi.put("chips", 2131230848);
+        bi.put("chocolate", 2131230850);
+        bi.put("cola", 2131230852);
+        bi.put("dessert", 2131230881);
+        bi.put("honey", 2131230912);
+        bi.put("jam", 2131230927);
+        bi.put("jello", 2131230929);
+        bi.put("popcorn", 2131230970);
+
+        bi.put("burrito", 2131230829);
+        bi.put("dumpling", 2131230889);
+        bi.put("fries", 2131230897);
+        bi.put("lasagna", 2131230931);
+        bi.put("pizza", 2131230968);
+
+        bi.put("battery", 2131230818);
+        bi.put("candle", 2131230836);
+        bi.put("diaper", 2131230883);
+        bi.put("flower", 2131230895);
+        bi.put("gift", 2131230903);
+        bi.put("razor", 2131230972);
+        bi.put("shampoo", 2131230974);
+        bi.put("sponge", 2131230980);
+        bi.put("vitamins", 2131230990);
+
+        bi.put("birndfood", 2131230822);
+        bi.put("catfood", 2131230840);
+        bi.put("catlitter", 2131230842);
+        bi.put("dogfood", 2131230885);
+    }
+
 
     private void childEventListener() {
 
@@ -349,6 +426,8 @@ public class MainWindow extends AppCompatActivity
 
                 }else if(sg.equals("quantity")){
                     list.setQuantity((ArrayList<String>) dataSnapshot.getValue());
+                }else if(sg.equals("productName")){
+                    list.setProductName((ArrayList<String>) dataSnapshot.getValue());
                 }
 
             }
@@ -405,8 +484,7 @@ public class MainWindow extends AppCompatActivity
                     list.setTime((Long) dataSnapshot.getValue());
                     //setTitleToolBar(list.getNameList());
                     //nameList = list.getNameList();
-
-                    Log.v(actualList, "WHY CHANGE MY OTHER LIST??******+++" + nameList);
+                    
                     if (hasChange) {
                         hasChange = false;
 
@@ -419,11 +497,7 @@ public class MainWindow extends AppCompatActivity
                     }
 
                     realTime = (Long) dataSnapshot.getValue();
-                    Log.v(sg, "Time has changed+++++++++");
                     if ((Long) dataSnapshot.getValue() > list.getTime()) {
-                        Log.v(sg, "***VALUE_sTRING*****");
-
-                        //list = newList;
 
                         /**
                          if(newList.getId().size() != 0) {
@@ -484,6 +558,8 @@ public class MainWindow extends AppCompatActivity
                 }else if(sg.equals("quantity")){
                     list.setQuantity((ArrayList<String>) dataSnapshot.getValue());
                     refreshMyList(list.getList());
+                }else if(sg.equals("productName")){
+                    list.setProductName((ArrayList<String>) dataSnapshot.getValue());
                 }
 
             }
@@ -562,11 +638,11 @@ public class MainWindow extends AppCompatActivity
             String q = "0";
             String d = "n";
             String o = person.getEmail() + ".com";
-
+            String pn = bi.inverse().get(image);
             if(lock == 1){
-                addElement(image, imagew, id, section, q, d, o);
+                addElement(image, imagew, id, section, q, d, o, pn);
             }else{
-                deleteElement(image, imagew, id, section, q, d, o);
+                deleteElement(image, imagew, id, section, q, d, o, pn);
 
             }
 
@@ -630,9 +706,6 @@ public class MainWindow extends AppCompatActivity
             ArrayList<String> names = new ArrayList<>();
             ArrayList<String> keyLists = new ArrayList<>();
             Map<String, String> map = person.getMyLists();
-
-            Log.v("PASANDO QUE ESTA ?", "PASANDO¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡");
-
 
             for(final String key: map.keySet()){
                 names.add(map.get(key));
@@ -719,7 +792,6 @@ public class MainWindow extends AppCompatActivity
                 Map<String, String> a = person.getMyLists();
 
                 for (String key : a.keySet()) {
-                    Log.v("TENEMOOS:", key+"++++actualList:"+a.get(key));
                     //list = (Lista) myLists.get(key);
                     actualList = key;
                     nameList = person.getMyLists().get(key);
@@ -939,12 +1011,14 @@ public class MainWindow extends AppCompatActivity
         ArrayList<Integer> myList = list.getList();
         ArrayList<String> theList = new ArrayList<>();
         ArrayList<String> theQuantity = new ArrayList<>(list.getQuantity());
+        ArrayList<String> productName = new ArrayList<>(list.getProductName());
 
         for(int j = 0; j<myList.size(); j++){
             theList.add(myList.get(j).toString());
         }
 
         theList.addAll(theList.size() , theQuantity);
+        theList.addAll(theList.size() , productName);
 
         listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
@@ -1012,12 +1086,14 @@ public class MainWindow extends AppCompatActivity
         //myList is an ArrayList of INTEGER, so we must parse it to ArrayList of String
         ArrayList<String> theList = new ArrayList<>();
         ArrayList<String> theQuantity = new ArrayList<>(list.getQuantity());
+        ArrayList<String> productName = new ArrayList<>(list.getProductName());
 
         for(int i = 0; i<myList.size(); i++){
             theList.add(myList.get(i).toString());
         }
 
         theList.addAll(theList.size() , theQuantity);
+        theList.addAll(theList.size() , productName);
 
         listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
@@ -1034,8 +1110,8 @@ public class MainWindow extends AppCompatActivity
         }
     }
 
-    private void deleteElement(Integer image, Integer imagew, Integer id, String section, String quantity, String description, String owner){
-        list.delete(image, imagew, id, section, quantity, description, owner);
+    private void deleteElement(Integer image, Integer imagew, Integer id, String section, String quantity, String description, String owner, String productName){
+        list.delete(image, imagew, id, section, quantity, description, owner, productName);
         list.setTime(System.nanoTime());
 
         decreaseSizeBasket();
@@ -1044,21 +1120,22 @@ public class MainWindow extends AppCompatActivity
         ArrayList<Integer> myList = list.getList();
         ArrayList<String> theList = new ArrayList<>();
         ArrayList<String> theQuantity = new ArrayList<>(list.getQuantity());
+        ArrayList<String> pName = new ArrayList<>(list.getProductName());
 
         for(int i = 0; i<myList.size(); i++){
             theList.add(myList.get(i).toString());
         }
 
         theList.addAll(theList.size() , theQuantity);
-
+        theList.addAll(theList.size() , pName);
 
         listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
         updateFirebase();
     }
 
-    private void addElement(Integer element, Integer elementw, Integer id, String section, String quantity, String description, String owner){
-        list.save(element, elementw, id, section, quantity, description, owner);
+    private void addElement(Integer element, Integer elementw, Integer id, String section, String quantity, String description, String owner, String productName){
+        list.save(element, elementw, id, section, quantity, description, owner, productName);
         list.setTime(System.nanoTime());
 
         broadAddDelete(elementw, id);
@@ -1069,12 +1146,13 @@ public class MainWindow extends AppCompatActivity
         ArrayList<Integer> myList = list.getList();
         ArrayList<String> theList = new ArrayList<>();
         ArrayList<String> theQuantity = new ArrayList<>(list.getQuantity());
-
+        ArrayList<String> pName = new ArrayList<>(list.getProductName());
         for(int i = 0; i<myList.size(); i++){
             theList.add(myList.get(i).toString());
         }
 
         theList.addAll(theList.size() , theQuantity);
+        theList.addAll(theList.size() , pName);
 
         listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
