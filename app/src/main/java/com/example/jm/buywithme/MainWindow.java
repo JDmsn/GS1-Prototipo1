@@ -147,7 +147,6 @@ public class MainWindow extends AppCompatActivity
 
             @Override
             public boolean onQueryTextChange(String s) {
-                Log.v("HEEE PASAADO", "ESTOY POR AQUI+++++++++++++++++");
                 if(s.equals("")){
                     searchGV.setVisibility(View.GONE);
                     tb1.setVisibility(View.VISIBLE);
