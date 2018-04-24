@@ -1,5 +1,6 @@
 package com.example.jm.buywithme;
 
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,11 +22,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.SearchView;
+import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jm.buywithme.Model.Lista;
@@ -60,11 +66,14 @@ public class MainWindow extends AppCompatActivity
     private GridView gv;
     private Lista list = new Lista();
     private Lista newList = new Lista();
-    private ListAdapter listAdapter;
+    private ListAdapter listAdapter, adapterSearch;
     private int totalHeight;
     private ArrayList<Integer> data = new ArrayList<Integer>();
     private ArrayList<Integer> data1 = new ArrayList<Integer>();
     private ArrayList<String> resultList = new ArrayList<String>();
+    private ArrayList<String> allTheImages = new ArrayList<>();
+    private ArrayList<String> allTheQuantities = new ArrayList<>();
+    private ArrayList<String> allTheNames= new ArrayList<>();
     private LinkedHashMap<String,Object> newMap = new LinkedHashMap<String,Object>();
     private Intent intent, intentForLists, intentForSettings, intentEditProduct;
     private String section, nameList;
@@ -83,12 +92,20 @@ public class MainWindow extends AppCompatActivity
     private boolean hasChange = false;
     private Map<String, Object> m = new LinkedHashMap<>();
     private BiMap<String,Integer> bi = HashBiMap.create();
-    private EditText search;
+    private BiMap<String,Integer> biId = HashBiMap.create();
+    private Map<String,String> biSec = new LinkedHashMap<>();
+    private SearchView sch;
+    private GridView searchGV;
+    private TableLayout tb1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_window);
         fillBiMap();
+        fillBiMapId();
+        fillMapSec();
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         intentForLists = new Intent("eventLists");
         intentForSettings = new Intent("eventSettings");
@@ -97,9 +114,110 @@ public class MainWindow extends AppCompatActivity
         database = FirebaseDatabase.getInstance();
         user = frau.getCurrentUser();
         ref = database.getReference();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         realTime = 00000000001L;
         person = new User(user.getEmail(), user.getUid());
-        search = (EditText) findViewById(R.id.search);
+        tb1 = (TableLayout) findViewById(R.id.table1);
+        gv = (GridView) findViewById(R.id.basket);
+        searchGV = (GridView) findViewById(R.id.searchGrid);
+
+        ArrayList<String> b = new ArrayList();
+        b.add("2131230844");
+
+        ArrayList<String> q = new ArrayList();
+        q.add("0");
+
+        ArrayList<String> pn = new ArrayList();
+        pn.add(bi.inverse().get(2131230844));
+
+        b.addAll(b.size(), q);
+        b.addAll(b.size(), pn);
+
+        adapterSearch = new ListAdapter(this, new ArrayList<String>());
+
+        sch = (SearchView) findViewById(R.id.search);
+
+        sch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.v("HEEE PASAADO", "ESTOY POR AQUI+++++++++++++++++");
+                if(s.equals("")){
+                    searchGV.setVisibility(View.GONE);
+                    tb1.setVisibility(View.VISIBLE);
+                    gv.setVisibility(View.VISIBLE);
+                }else{
+                    tb1.setVisibility(View.GONE);
+                    gv.setVisibility(View.GONE);
+                    searchGV.setVisibility(View.VISIBLE);
+                }
+
+                adapterSearch = new ListAdapter(MainWindow.this, getSearch(s));
+                searchGV.setAdapter(adapterSearch);
+                refreshSizeOfSearchBox();
+
+                searchGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                        //Check if it is in the our list
+
+                        String name = allTheNames.get(i);
+                        List<String> n = list.getProductName();
+
+                        if(n.contains(name)){
+                            for(int j = 0; j<n.size(); j++) {
+                                if(n.get(j).equals(name)){
+                                    list.delete(j);
+                                    break;
+                                }
+                            }
+                            refreshMyList(list.getList());
+                        }else{
+                            String pName = bi.inverse().get(Integer.parseInt(allTheImages.get(i)));
+                            Integer image = Integer.parseInt(allTheImages.get(i));
+                            Integer imageW = new Integer(image + 1);
+                            String sec = biSec.get(pName);
+                            Integer pId = biId.get(pName);
+
+                            //Integer element, Integer elementw, Integer id, String section, String quantity, String description, String owner, String productName
+                            addElement(image, imageW, pId, sec, "0", "n", person.getEmail() + ".com", pName);
+
+                        }
+
+                        sch.setQuery("", true);
+                        searchGV.setVisibility(View.GONE);
+                        tb1.setVisibility(View.VISIBLE);
+                        gv.setVisibility(View.VISIBLE);
+
+                    }
+                });
+
+                searchGV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                        Integer a = Integer.parseInt(allTheImages.get(i));
+                        Integer b = new Integer(a + 1);
+
+                        Log.v("HE HECHO UN TOQUE LARGO", "AQUI ESTOYYY+**+*+**++*+**+*+*+*++*" + a + " ," + b);
+                        sch.setQuery("", true);
+                        searchGV.setVisibility(View.GONE);
+                        tb1.setVisibility(View.VISIBLE);
+                        gv.setVisibility(View.VISIBLE);
+                        return true;
+                    }
+                });
+
+                return false;
+            }
+        });
 
 
 
@@ -241,7 +359,7 @@ public class MainWindow extends AppCompatActivity
         h_and_h.setOnClickListener(this);
         m_and_f.setOnClickListener(this);
 
-        gv = (GridView) findViewById(R.id.basket);
+
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -289,7 +407,6 @@ public class MainWindow extends AppCompatActivity
         gv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
               @Override
               public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                  Log.v("HA SIDO PULSADO:", "EN LA LISTA EL ELEMENTO:" + i);
 
                   //enviar los datos al editar producto: imagen, nombre, cantidad, descripcion, propietario
 
@@ -308,18 +425,71 @@ public class MainWindow extends AppCompatActivity
         });
     }
 
-    /**
-    @Override
-    public boolean onCreateOptionMenu(Menu menu){
+
+    private ArrayList<String> getSearch(String s){
+        //YA TIENES LA INFORMACIÓN DEL CUADRO DE BÚSQUEDA
+        //ITERAMOS POR LAS CLAVES
+        //GUARDAR: IMAGE, QUANTITY, NAME <+++++
+
+        boolean door = true;
+        String b = s.toLowerCase();
+        ArrayList<String> nl = new ArrayList<>(list.getProductName());
+        ArrayList<String> ql = new ArrayList<>(list.getQuantity());
+        ArrayList<Integer> il = new ArrayList<>(list.getListw());
+        allTheNames = new ArrayList<>();
+        allTheQuantities = new ArrayList<>();
+        allTheImages = new ArrayList<>();
 
 
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(, menu);
+        for(String key : bi.keySet()){
 
-        return super.onCreateOptionsMenu(menu);
+            if(key.contains(b)){
 
+                for(int i = 0;i <nl.size(); i++){
+                    //OBTENEMOS LA IMAGEN EN NEGATIVO
+                    if(nl.get(i).contains(key)){
+                        allTheNames.add(nl.get(i));
+                        allTheQuantities.add(ql.get(i));
+                        allTheImages.add(Integer.toString(il.get(i)));
+
+                        door = false;
+
+                    }
+                }
+
+                //OBTENEMOS LA IMAGEN EN POSITIVO
+                if(door){
+                    allTheImages.add(Integer.toString(bi.get(key)));
+                    allTheQuantities.add("0");
+                    allTheNames.add(key);
+                }
+
+                door = true;
+            }
+        }
+
+        //UNION DE TODOS LOS ARRAYS
+        allTheQuantities.addAll(allTheNames);
+        allTheImages.addAll(allTheQuantities);
+        Log.v("DEVUELVE", "EN LA LISTA HAY:" + allTheImages);
+        return allTheImages;
     }
-    **/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_window, menu);
+
+        //SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        //SearchView searchView = sch;
+
+        // Assumes current activity is the searchable activity
+        //searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+        return true;
+    }
+
     private void fillBiMap() {
         bi.put("pear", 2131230961);
         bi.put("apple", 2131230810);
@@ -386,6 +556,139 @@ public class MainWindow extends AppCompatActivity
         bi.put("dogfood", 2131230885);
     }
 
+    private void fillBiMapId() {
+        biId.put("pear", 2131362000);
+        biId.put("apple", 2131361831);
+        biId.put("banana", 2131361836);
+        biId.put("carrot", 2131361856);
+        biId.put("garlic", 2131361920);
+        biId.put("grapes", 2131361923);
+        biId.put("peach", 2131361999);
+        biId.put("peper", 2131362002);
+
+        biId.put("bun", 2131361846);
+        biId.put("croissant", 2131361877);
+        biId.put("donut", 2131361894);
+        biId.put("muffin", 2131361970);
+        biId.put("pancake", 2131361991);
+        biId.put("pie", 2131362003);
+        biId.put("toast", 2131362078);
+        biId.put("bread", 2131361845);
+
+        biId.put("butter", 2131361848);
+        biId.put("cheese", 2131361864);
+        biId.put("eggs", 2131361900);
+        biId.put("milk", 2131361968);
+        biId.put("yogurt", 2131362099);
+
+        biId.put("bacon", 2131361835);
+        biId.put("beef", 2131361840);
+        biId.put("chiken", 2131361865);
+        biId.put("fish", 2131361915);
+        biId.put("ham", 2131361925);
+        biId.put("hotdog", 2131361930);
+        biId.put("lobster",2131361959);
+        biId.put("oysters", 2131361988);
+        biId.put("shrimp", 2131362044);
+
+        biId.put("cake", 2131361851);
+        biId.put("chips", 2131361866);
+        biId.put("chocolate", 2131361867);
+        biId.put("cola", 2131361871);
+        biId.put("dessert", 2131361890);
+        biId.put("honey", 2131361929);
+        biId.put("jam", 2131361947);
+        biId.put("jello", 2131361948);
+        biId.put("popcorn", 2131362006);
+
+        biId.put("burrito", 2131361847);
+        biId.put("dumpling", 2131361896);
+        biId.put("fries", 2131361919);
+        biId.put("lasagna", 2131361950);
+        biId.put("pizza", 2131362005);
+
+        biId.put("battery", 2131361839);
+        biId.put("candle", 2131361855);
+        biId.put("diaper", 2131361891);
+        biId.put("flower", 2131361917);
+        biId.put("gift", 2131361922);
+        biId.put("razor", 2131362011);
+        biId.put("shampoo", 2131362039);
+        biId.put("sponge", 2131362052);
+        biId.put("vitamins", 2131362094);
+
+        biId.put("birndfood", 2131361842);
+        biId.put("catfood", 2131361857);
+        biId.put("catlitter", 2131361858);
+        biId.put("dogfood", 2131361893);
+    }
+
+    private void fillMapSec() {
+        biSec.put("pear", "f_and_v");
+        biSec.put("apple", "f_and_v");
+        biSec.put("banana", "f_and_v");
+        biSec.put("carrot", "f_and_v");
+        biSec.put("garlic", "f_and_v");
+        biSec.put("grapes", "f_and_v");
+        biSec.put("peach", "f_and_v");
+        biSec.put("peper", "f_and_v");
+
+        biSec.put("bun", "b_and_p");
+        biSec.put("croissant", "b_and_p");
+        biSec.put("donut", "b_and_p");
+        biSec.put("muffin", "b_and_p");
+        biSec.put("pancake", "b_and_p");
+        biSec.put("pie", "b_and_p");
+        biSec.put("toast", "b_and_p");
+        biSec.put("bread", "b_and_p");
+
+        biSec.put("butter", "m_and_c");
+        biSec.put("cheese", "m_and_c");
+        biSec.put("eggs", "m_and_c");
+        biSec.put("milk", "m_and_c");
+        biSec.put("yogurt", "m_and_c");
+
+        biSec.put("bacon", "m_and_f");
+        biSec.put("beef", "m_and_f");
+        biSec.put("chiken", "m_and_f");
+        biSec.put("fish", "m_and_f");
+        biSec.put("ham", "m_and_f");
+        biSec.put("hotdog", "m_and_f");
+        biSec.put("lobster","m_and_f");
+        biSec.put("oysters", "m_and_f");
+        biSec.put("shrimp", "m_and_f");
+
+        biSec.put("cake", "s_and_s");
+        biSec.put("chips", "s_and_s");
+        biSec.put("chocolate", "s_and_s");
+        biSec.put("cola", "s_and_s");
+        biSec.put("dessert", "s_and_s");
+        biSec.put("honey", "s_and_s");
+        biSec.put("jam", "s_and_s");
+        biSec.put("jello", "s_and_s");
+        biSec.put("popcorn", "s_and_s");
+
+        biSec.put("burrito", "f_f");
+        biSec.put("dumpling", "f_f");
+        biSec.put("fries", "f_f");
+        biSec.put("lasagna", "f_f");
+        biSec.put("pizza", "f_f");
+
+        biSec.put("battery", "h_and_h");
+        biSec.put("candle", "h_and_h");
+        biSec.put("diaper", "h_and_h");
+        biSec.put("flower", "h_and_h");
+        biSec.put("gift", "h_and_h");
+        biSec.put("razor", "h_and_h");
+        biSec.put("shampoo", "h_and_h");
+        biSec.put("sponge", "h_and_h");
+        biSec.put("vitamins", "h_and_h");
+
+        biSec.put("birndfood", "p_supplies");
+        biSec.put("catfood", "p_supplies");
+        biSec.put("catlitter", "p_supplies");
+        biSec.put("dogfood", "p_supplies");
+    }
 
     private void childEventListener() {
 
@@ -638,7 +941,6 @@ public class MainWindow extends AppCompatActivity
         //revisar si la lista ha cambiado
         ref.child("Lists").child(actualList).setValue(list);
 
-
     }
 
 
@@ -694,13 +996,6 @@ public class MainWindow extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_window, menu);
-        return true;
     }
 
     @Override
@@ -1234,6 +1529,32 @@ public class MainWindow extends AppCompatActivity
         params.height = 330 * totalHeight;
         gv.setLayoutParams(params);
         gv.requestLayout();
+    }
+
+    private void refreshSizeOfSearchBox(){
+        int totalHeight = allTheImages.size()/3;
+
+        if(allTheImages.size() % 3 !=0){
+
+            totalHeight++;
+
+        }else if(allTheImages.size() % 3 == 0 && allTheImages.size()!=0){
+            totalHeight--;
+            totalHeight = allTheImages.size()/3;
+
+        }
+
+        ViewGroup.LayoutParams params = searchGV.getLayoutParams();
+
+        if(totalHeight > 4){
+            params.height = 330 * totalHeight;
+        }else{
+            params.height = 330;
+        }
+
+        searchGV.setLayoutParams(params);
+        searchGV.requestLayout();
+
     }
 
     private void setTitleToolBar(String name) {

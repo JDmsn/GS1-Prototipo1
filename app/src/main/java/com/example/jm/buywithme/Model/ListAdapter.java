@@ -41,7 +41,7 @@ public class ListAdapter extends ArrayAdapter<String> {
         size = theList.size() - (theList.size()/3);
         for (int i = size; i<theList.size(); i++){
             this.productName.add(theList.get(i));
-            Log.v("EL NOMBRE DEL P:", "NOMBRE DEL PRODUCTO, NOMBRE:" + theList.get(i));
+            //Log.v("EL NOMBRE DEL P:", "NOMBRE DEL PRODUCTO, NOMBRE:" + theList.get(i));
         }
 
     }
