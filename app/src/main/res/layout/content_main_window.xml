@@ -181,7 +181,7 @@
                         android:src="@drawable/zp" />
 
                     <ImageButton
-                        android:id="@+id/recent_products"
+                        android:id="@+id/recently_used"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight=".50"
@@ -189,7 +189,7 @@
                         android:background="@null"
                         android:padding="2dp"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/petsupplies" />
+                        android:src="@drawable/zqrecentlyused" />
                 </TableRow>
 
                 <TableRow

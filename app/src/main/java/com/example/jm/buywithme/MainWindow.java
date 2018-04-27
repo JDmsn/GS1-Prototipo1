@@ -51,16 +51,22 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class MainWindow extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
 
-    private ImageButton f_and_v, b_and_p, m_and_c, s_and_s, f_f, p_supplies, h_and_h, m_and_f, own_products, im;
+    private ImageButton f_and_v, b_and_p, m_and_c, s_and_s, f_f, p_supplies, h_and_h, m_and_f, own_products, recently_used, im;
     private FirebaseAuth frau;
     private Intent in;
     private GridView gv;
@@ -75,7 +81,7 @@ public class MainWindow extends AppCompatActivity
     private ArrayList<String> allTheQuantities = new ArrayList<>();
     private ArrayList<String> allTheNames= new ArrayList<>();
     private LinkedHashMap<String,Object> newMap = new LinkedHashMap<String,Object>();
-    private Intent intent, intentForLists, intentForSettings, intentEditProduct, intentCreateProduct, intentNewProductSettings;
+    private Intent intent, intentForLists, intentForSettings, intentEditProduct, intentCreateProduct, intentNewProductSettings, intentRecentProduct;
     private String section, nameList;
     private LinkedHashMap<String, Object> myLists = new LinkedHashMap<>();
     private Toolbar toolbar;
@@ -95,6 +101,10 @@ public class MainWindow extends AppCompatActivity
     private BiMap<String,Integer> bi = HashBiMap.create();
     private BiMap<String,Integer> biId = HashBiMap.create();
     private Map<String,String> biSec = new LinkedHashMap<>();
+
+    private ArrayList<String> rNames = new ArrayList<>();
+    private ArrayList<Integer> rNumbers = new ArrayList<>();
+
     private SearchView sch;
     private GridView searchGV;
     private TableLayout tb1;
@@ -113,6 +123,7 @@ public class MainWindow extends AppCompatActivity
         intentEditProduct = new Intent("eventEditProduct");
         intentNewProductSettings = new Intent("eventEditOwnProduct");
         intentCreateProduct = new Intent("eventOwnProducts");
+        intentRecentProduct = new Intent("eventRecentlyUsed");
 
         frau = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -361,6 +372,7 @@ public class MainWindow extends AppCompatActivity
         p_supplies = (ImageButton) findViewById(R.id.p_supplies);
         h_and_h = (ImageButton) findViewById(R.id.h_and_h);
         own_products = (ImageButton) findViewById(R.id.own_products);
+        recently_used = (ImageButton) findViewById(R.id.recently_used);
         f_and_v.setOnClickListener(this);
         b_and_p.setOnClickListener(this);
         m_and_c.setOnClickListener(this);
@@ -370,6 +382,7 @@ public class MainWindow extends AppCompatActivity
         h_and_h.setOnClickListener(this);
         m_and_f.setOnClickListener(this);
         own_products.setOnClickListener(this);
+        recently_used.setOnClickListener(this);
 
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -391,14 +404,17 @@ public class MainWindow extends AppCompatActivity
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageOwnProducts, new IntentFilter("eventOwnProducts"));
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageRecentProducts, new IntentFilter("eventRecentlyUsed"));
+
         in = new Intent(MainWindow.this, SFV.class);
 
         intentNewProductSettings = new Intent(MainWindow.this, NewProductSettings.class);
         intentForLists = new Intent(MainWindow.this, MyLists.class);
         intentForSettings = new Intent(MainWindow.this, Settings.class);
         intentEditProduct = new Intent(MainWindow.this, EditElement.class);
-
         intentCreateProduct = new Intent(MainWindow.this, OwnProduct.class);
+        intentRecentProduct = new Intent(MainWindow.this, RecentProduct.class);
+
         //dr1.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -1033,9 +1049,9 @@ public class MainWindow extends AppCompatActivity
             String img = intent.getStringExtra("img");
             String name = intent.getStringExtra("name");
             List l = list.getProductName();
-            //addElement(image, imagew, id, section, q, d, o, pn);
+
             if(img.equals("2131230995")){
-                //"2131230995"
+                //addElement(image, imagew, id, section, q, d, o, pn)
                 addElement(Integer.valueOf("2131230994"), Integer.valueOf("2131230995"), Integer.valueOf("0000000000"),
                         "own_products", "0", "n", person.getEmail() + ".com", name);
 
@@ -1050,6 +1066,39 @@ public class MainWindow extends AppCompatActivity
                 }
             }
 
+
+
+        }
+    };
+
+    private BroadcastReceiver mMessageRecentProducts = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String img = intent.getStringExtra("img");
+            String name = intent.getStringExtra("name");
+            String owner = ow.get(name);
+
+            List l = list.getProductName();
+
+            if(img.equals("2131230994")){
+
+                //addElement(image, imagew, id, section, q, d, o, pn);
+                addElement(Integer.valueOf("2131230994"), Integer.valueOf("2131230995"), Integer.valueOf("0000000000"),
+                        "own_products", "0", "n", owner, name);
+
+            }else{
+                Integer i = bi.get(name);
+                Integer iw = new Integer(i + 1);
+                Integer id = biId.get(name);
+                String sec = biSec.get(name);
+
+                addElement(i, iw, id,sec, "0", "n", person.getEmail() + ".com", name);
+
+                updateFirebase();
+                refreshMyList(list.getList());
+
+            }
 
 
         }
@@ -1481,6 +1530,52 @@ public class MainWindow extends AppCompatActivity
 
             startActivity(intentCreateProduct);
 
+        }else if(view == recently_used){
+
+            //Algoritmo para obtener los productos utilizados recientemente (algoritmo de la burbuja)
+            for(int x = 0; x<rNumbers.size(); x++){
+                for(int j = 0; j<rNumbers.size() - x - 1; j++){
+                    if(rNumbers.get(j) < rNumbers.get(j + 1)){
+                        int tmp = rNumbers.get(j + 1);
+                        String tmpa = rNames.get(j + 1);
+
+                        //Borramos y añadimos
+                        rNumbers.remove(j + 1);
+                        rNumbers.add(j + 1, rNumbers.get(j));
+                        rNames.remove(j + 1);
+                        rNames.add(j + 1, rNames.get(j));
+
+                        rNumbers.remove(j);
+                        rNumbers.add(j, tmp);
+                        rNames.remove(j);
+                        rNames.add(j, tmpa);
+                    }
+                }
+            }
+
+            //Hay que poner los que no estan en la lista: programar algoritmo
+
+            List<String> l = list.getProductName();
+
+            ArrayList<String> allNames = new ArrayList<>();
+            ArrayList<String> allImages = new ArrayList<>();
+
+            for(int i = 0; i<rNames.size(); i++){
+                if(!l.contains(rNames.get(i))){
+                    allNames.add(rNames.get(i));
+                    if(bi.containsKey(rNames.get(i))){
+                        allImages.add((bi.get(rNames.get(i))).toString());
+                    }else{
+                        allImages.add("2131230994");
+                    }
+                }
+
+            }
+
+            intentRecentProduct.putStringArrayListExtra("allImages", allImages);
+            intentRecentProduct.putStringArrayListExtra("names", allNames);
+
+            startActivity(intentRecentProduct);
         }
 
     }
@@ -1624,6 +1719,21 @@ public class MainWindow extends AppCompatActivity
         list.save(element, elementw, id, section, quantity, description, owner, productName);
         list.setTime(System.nanoTime());
 
+        if(!rNames.contains(productName)){
+            rNames.add(productName);
+            rNumbers.add(1);
+        }else{
+            for(int i = 0; i<rNames.size(); i++){
+                if(rNames.get(i).equals(productName)){
+                    int n = rNumbers.get(i);
+                    rNumbers.remove(i);
+                    rNumbers.add(i, n + 1);
+                    break;
+                }
+
+            }
+        }
+
         broadAddDelete(elementw, id);
 
         increaseSizeBasket();
@@ -1654,7 +1764,6 @@ public class MainWindow extends AppCompatActivity
 
         //Hacer diferenciacion
         if(element.equals(Integer.valueOf("2131230994")) || element.equals(Integer.valueOf("2131230995")) ){
-
             LocalBroadcastManager.getInstance(this).sendBroadcast(intentCreateProduct);
 
         }else {

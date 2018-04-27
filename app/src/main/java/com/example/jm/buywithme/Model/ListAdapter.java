@@ -68,11 +68,12 @@ public class ListAdapter extends ArrayAdapter<String> {
 
             TextView character = listViewSingle.findViewById(R.id.character);
             TextView text = listViewSingle.findViewById(R.id.text);
-
-            if(!quantity.get(position).equals("0")){
-                textView.setText(quantity.get(position));
+            if(quantity.size() != 0) {
+                Log.v("LA cantidad es:", "CANTIDAD:" + quantity);
+                if(!quantity.get(position).equals("0")) {
+                    textView.setText(quantity.get(position));
+                }
             }
-
             text.setText(productName.get(position));
             character.setText(productName.get(position).substring(0, 1));
 

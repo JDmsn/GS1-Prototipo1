@@ -125,11 +125,7 @@ public class NewProductSettings extends AppCompatActivity{
                 if(!inputQ.getText().toString().equals("")){
                     intent.putExtra("quantity", inputQ.getText().toString());
                 }else{
-                    if(quantity != null ) {
-                        if (quantity.length() == 0) {
-                            intent.putExtra("description", "n");
-                        }
-                    }
+                    intent.putExtra("quantity", "0");
 
                 }
 

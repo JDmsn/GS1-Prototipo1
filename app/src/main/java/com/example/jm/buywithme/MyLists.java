@@ -204,7 +204,6 @@ public class MyLists extends AppCompatActivity {
 
                 return true;
             case 2:
-                Log.v("El caso 2","´´´´´´¡¡¡¡¡¡¡¡");
 
                 new AlertDialog.Builder(MyLists.this)
                         .setTitle("Delete List")
@@ -318,7 +317,6 @@ public class MyLists extends AppCompatActivity {
                     }
                 }
                 if(!check){
-                    Log.v("IOO", "IIIIIIIIIIIIIIIIIIIIIIIII*******");
                     ref.child("Users").child(p.get(i)).child("myLists").child(actualList).removeValue();
                     allEmails.remove(p.get(i));
                     ref.child("Lists").child(actualList).child("users").setValue(allEmails);
