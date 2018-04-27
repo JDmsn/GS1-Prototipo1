@@ -164,6 +164,33 @@
                         android:src="@drawable/petsupplies" />
                 </TableRow>
 
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp">
+
+                    <ImageButton
+                        android:id="@+id/own_products"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/zp" />
+
+                    <ImageButton
+                        android:id="@+id/recent_products"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".50"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:padding="2dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/petsupplies" />
+                </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"

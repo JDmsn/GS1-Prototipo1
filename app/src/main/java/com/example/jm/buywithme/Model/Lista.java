@@ -1,7 +1,10 @@
 package com.example.jm.buywithme.Model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 /**
  * Created by jm on 17.12.30.
  */
@@ -21,6 +24,8 @@ public class Lista {
     private List<String> description = new ArrayList<>();
     private List<String> owner = new ArrayList<>();
     private List<String> productName = new ArrayList<>();
+
+    private Map<String, String> owp = new LinkedHashMap<>();
 
     public Lista(){
         time = 0L;
@@ -181,8 +186,6 @@ public class Lista {
         this.nameList = nameList;
     }
 
-
-
     public List<String> getQuantity() {
         return quantity;
     }
@@ -213,5 +216,13 @@ public class Lista {
 
     public void setProductName(List<String> productName) {
         this.productName = productName;
+    }
+
+    public void setOwp(Map<String, String> owp){
+        this.owp = owp;
+    }
+
+    public Map<String, String> getOwp(){
+        return  owp;
     }
 }

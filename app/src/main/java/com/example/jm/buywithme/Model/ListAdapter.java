@@ -22,13 +22,13 @@ public class ListAdapter extends ArrayAdapter<String> {
     private final ArrayList<Integer> imageName = new ArrayList<>();
     private final ArrayList<String> quantity = new ArrayList<>();
     private final ArrayList<String> productName = new ArrayList<>();
+    private final Integer a = Integer.valueOf(2131230994);
+    private final Integer b = Integer.valueOf(2131230995);
 
     public ListAdapter(Activity context, ArrayList<String> theList){
-
         super(context, R.layout.list_items, theList.subList(0, theList.size()/3));
         this.context = context;
 
-        //Dividir el array ->>>>>
         for (int i = 0; i<(theList.size()/3); i++){
             this.imageName.add(Integer.parseInt(theList.get(i)));
         }
@@ -41,7 +41,7 @@ public class ListAdapter extends ArrayAdapter<String> {
         size = theList.size() - (theList.size()/3);
         for (int i = size; i<theList.size(); i++){
             this.productName.add(theList.get(i));
-            //Log.v("EL NOMBRE DEL P:", "NOMBRE DEL PRODUCTO, NOMBRE:" + theList.get(i));
+
         }
 
     }
@@ -49,14 +49,32 @@ public class ListAdapter extends ArrayAdapter<String> {
     public View getView(int position, View view, ViewGroup parent){
         LayoutInflater inflater = context.getLayoutInflater();
         View listViewSingle = inflater.inflate(R.layout.list_items, null, true);
+        ImageView listViewImage = (ImageView) listViewSingle.findViewById(R.id.imageView1);
+        TextView textView = (TextView) listViewSingle.findViewById(R.id.quantity);
 
-        if(position < imageName.size()){
-            ImageView listViewImage = (ImageView) listViewSingle.findViewById(R.id.imageView1);
-            TextView textView = (TextView) listViewSingle.findViewById(R.id.quantity);
+        if((!imageName.get(position).equals(a)) && !imageName.get(position).equals(b) && position < imageName.size()){
+
 
             if(!quantity.get(position).equals("0")){
                 textView.setText(quantity.get(position));
             }
+
+            listViewImage.setImageResource(imageName.get(position));
+            return listViewSingle;
+
+        }
+
+        if(imageName.get(position).equals(a) || imageName.get(position).equals(b)){
+
+            TextView character = listViewSingle.findViewById(R.id.character);
+            TextView text = listViewSingle.findViewById(R.id.text);
+
+            if(!quantity.get(position).equals("0")){
+                textView.setText(quantity.get(position));
+            }
+
+            text.setText(productName.get(position));
+            character.setText(productName.get(position).substring(0, 1));
 
             listViewImage.setImageResource(imageName.get(position));
             return listViewSingle;
