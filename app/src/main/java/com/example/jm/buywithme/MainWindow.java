@@ -924,8 +924,7 @@ public class MainWindow extends AppCompatActivity
 
                 } else if (sg.equals("users")) {
                     Log.v(sg, "Users have changed");
-                    List<String> u = (ArrayList<String>) dataSnapshot.getValue();
-                    list.setUsers(u);
+                    list.setUsers((ArrayList<String>) dataSnapshot.getValue());
 
                     /**
                     ArrayList<String> u = (ArrayList<String>) dataSnapshot.getValue();
@@ -1271,10 +1270,18 @@ public class MainWindow extends AppCompatActivity
                 //refreshMyList(list.getList());
 
             }else{
+                List<String> u = list.getUsers();
+                for(int j = 0; j<u.size(); j++){
+                    if(u.get(j).equals(person.getEmail())){
+                        u.remove(j);
+                        break;
+                    }
+                }
+
                 person.deleteFromMyLists(Long.valueOf(actualList));
                 myLists.remove(actualList);
-                ref.child("Lists").child(actualList).child("users").child(person.getEmail()).removeValue();
 
+                ref.child("Lists").child(actualList).child("users").setValue(u);
                 ref.child("Users").child(person.getEmail()).child("myLists").child(actualList).removeValue();
                 /**
                 ref.child("Lists").child(actualList).child("users").child(person.getEmail()).removeValue();
@@ -1715,8 +1722,10 @@ public class MainWindow extends AppCompatActivity
 
         listAdapter = new ListAdapter(MainWindow.this, theList);
         gv.setAdapter(listAdapter);
+        updateSizeBasket();
         updateAllUsers();
     }
+
 
     public void updateAllUsers(){
         Map<String, String> map = person.getMyLists();
@@ -1808,6 +1817,23 @@ public class MainWindow extends AppCompatActivity
         }
     }
 
+    private void updateSizeBasket() {
+        if(list.size() % 3 == 0 && list.size()!=0){
+            totalHeight--;
+            totalHeight = list.size()/3;
+        }else{
+            totalHeight = list.size()/3;
+            if(list.size() % 3 !=0){
+                totalHeight++;
+            }
+        }
+
+        ViewGroup.LayoutParams params = gv.getLayoutParams();
+        params.height = 330 * totalHeight;
+        gv.setLayoutParams(params);
+        gv.requestLayout();
+    }
+
     private void decreaseSizeBasket(){
         if(list.size() % 3 == 0 && list.size()!=0){
             totalHeight--;
@@ -1819,6 +1845,7 @@ public class MainWindow extends AppCompatActivity
         gv.setLayoutParams(params);
         gv.requestLayout();
     }
+
 
     private void increaseSizeBasket(){
         totalHeight = list.size()/3;
