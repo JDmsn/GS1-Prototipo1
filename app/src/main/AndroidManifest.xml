@@ -44,7 +44,7 @@
             android:name="com.example.jm.buywithme.RecentProduct"
             android:theme="@style/AppTheme.CustomTheme"
             android:windowSoftInputMode="stateHidden"></activity>
-        
+
         <!-- <receiver android:name="com.example.jm.buywithme.SFV" /> -->
 
         <activity android:name="com.example.jm.buywithme.MyLists"></activity>

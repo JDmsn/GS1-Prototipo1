@@ -300,6 +300,7 @@ public class MainWindow extends AppCompatActivity
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 if(dataSnapshot.getKey().equals("myLists")){
+
                     for (DataSnapshot ds: dataSnapshot.getChildren()) {
                         person.addToMyLists(ds.getKey(), (String) ds.getValue());
                         if(start){
@@ -323,6 +324,9 @@ public class MainWindow extends AppCompatActivity
 
                     if(!((Map<String, String>) dataSnapshot.getValue()).containsKey(actualList)){
                         Toast.makeText(MainWindow.this, "You've been removed from one of the lists", Toast.LENGTH_SHORT).show();
+
+                        reference.removeEventListener(listEvent);
+
                         Map<String, String> a = person.getMyLists();
                         for (String key : a.keySet()) {
                             actualList = key;
@@ -332,6 +336,7 @@ public class MainWindow extends AppCompatActivity
                             break;
                         }
 
+                        refreshMyList(list.getList());
                         setTitleToolBar(nameList);
                     }
 
@@ -804,6 +809,7 @@ public class MainWindow extends AppCompatActivity
                     myLists.put(dataSnapshot.getKey(), list);
                     setTitleToolBar(nameList);
                     refreshMyList(list.getList());
+
                 } else if(sg.equals("description")){
                     list.setDescription((ArrayList<String>) dataSnapshot.getValue());
 
@@ -867,6 +873,7 @@ public class MainWindow extends AppCompatActivity
                 } else if (sg.equals("section")) {
                     newList.setSection((ArrayList<String>) dataSnapshot.getValue());
                     list.setSection((ArrayList<String>) dataSnapshot.getValue());
+                    refreshMyList(list.getList());
                     hasChange = true;
                 } else if (sg.equals("time")) {
 
@@ -915,9 +922,14 @@ public class MainWindow extends AppCompatActivity
                     //myLists.put(actualList)
                     setTitleToolBar(nameList);
 
-                } else if (sg.equals("users") && realTime > list.getTime()) {
+                } else if (sg.equals("users")) {
                     Log.v(sg, "Users have changed");
+                    List<String> u = (ArrayList<String>) dataSnapshot.getValue();
+                    list.setUsers(u);
+
+                    /**
                     ArrayList<String> u = (ArrayList<String>) dataSnapshot.getValue();
+
                     if (u.contains(person.getEmail())) {
                         list.setTime(realTime);
                         list.setUsers((ArrayList<String>) dataSnapshot.getValue());
@@ -938,6 +950,7 @@ public class MainWindow extends AppCompatActivity
                         startActivityForResult(intentForLists, 1);
                     }
 
+                     **/
                 } else if(sg.equals("description")){
                     list.setDescription((ArrayList<String>) dataSnapshot.getValue());
 
@@ -989,7 +1002,6 @@ public class MainWindow extends AppCompatActivity
 
     final Runnable r = new Runnable() {
         public void run() {
-
             //UPDATING FIREBASE
             updateFirebase();
             handler.postDelayed(this, 10000);
@@ -1039,7 +1051,6 @@ public class MainWindow extends AppCompatActivity
                 deleteElement(image, imagew, id, section, q, d, o, pn);
 
             }
-
         }
     };
 
@@ -1048,7 +1059,7 @@ public class MainWindow extends AppCompatActivity
         public void onReceive(Context context, Intent intent) {
             String img = intent.getStringExtra("img");
             String name = intent.getStringExtra("name");
-            List l = list.getProductName();
+            List<String> l = list.getProductName();
 
             if(img.equals("2131230995")){
                 //addElement(image, imagew, id, section, q, d, o, pn)
@@ -1056,6 +1067,12 @@ public class MainWindow extends AppCompatActivity
                         "own_products", "0", "n", person.getEmail() + ".com", name);
 
             }else{
+
+                deleteElement(Integer.valueOf("2131230994"), Integer.valueOf("2131230995"),
+
+                        Integer.valueOf("0000000000"), "own_products", "0", "n", person.getEmail() + ".com", name);
+
+                /**
                 for(int i = 0; i<l.size(); i++){
                     if(l.get(i).equals(name)){
                         list.delete(i);
@@ -1064,10 +1081,8 @@ public class MainWindow extends AppCompatActivity
                         break;
                     }
                 }
+                 **/
             }
-
-
-
         }
     };
 
@@ -1228,15 +1243,18 @@ public class MainWindow extends AppCompatActivity
         if(resultcode == 22){
             if(list.getAdmin().equals(person.getEmail())){
                 ArrayList<String> m = new ArrayList<>(list.getUsers());
+                String oldKey = actualList;
+
                 for(int i = 0; i<m.size(); i++){
                     ref.child("Users").child(m.get(i)).child("myLists").child(actualList).removeValue();
 
                 }
-                ref.child("Lists").child(actualList).removeValue();
+                ref.child("Lists").child(oldKey).removeValue();
 
-                person.deleteFromMyLists(Long.valueOf(actualList));
-                myLists.remove(actualList);
+                person.deleteFromMyLists(Long.valueOf(oldKey));
+                myLists.remove(oldKey);
 
+                /**
                 Map<String, String> a = person.getMyLists();
 
                 for (String key : a.keySet()) {
@@ -1249,20 +1267,37 @@ public class MainWindow extends AppCompatActivity
                 }
 
                 setTitleToolBar(nameList);
+                **/
                 //refreshMyList(list.getList());
 
             }else{
+                person.deleteFromMyLists(Long.valueOf(actualList));
+                myLists.remove(actualList);
                 ref.child("Lists").child(actualList).child("users").child(person.getEmail()).removeValue();
+
                 ref.child("Users").child(person.getEmail()).child("myLists").child(actualList).removeValue();
+                /**
+                ref.child("Lists").child(actualList).child("users").child(person.getEmail()).removeValue();
+                myLists.remove(actualList);
+
+                //String oldKey = actualList;
+
+                //ref.child("Users").child(person.getEmail()).child("myLists").child(actualList).removeValue();
 
                 for (String key : myLists.keySet()) {
                     list = (Lista) myLists.get(key);
                     actualList = key;
                     nameList = list.getNameList();
+                    childEventListener(); //Cambiado
+                    reference.addChildEventListener(listEvent);//Cambiado
                     break;
                 }
+
+                ref.child("Users").child(person.getEmail()).child("myLists").child(oldKey).removeValue();
+
                 setTitleToolBar(nameList);
                 refreshMyList(list.getList());
+                **/
             }
 
 
@@ -1362,7 +1397,10 @@ public class MainWindow extends AppCompatActivity
             }
 
             reference.removeEventListener(listEvent);
+
             ow.clear();
+            rNames.clear();
+            rNumbers.clear();
 
             setTitleToolBar(data.getStringExtra("listName"));
             nameList = data.getStringExtra("listName");
@@ -1424,7 +1462,6 @@ public class MainWindow extends AppCompatActivity
                     }
                 }
             }
-
 
         }
     }

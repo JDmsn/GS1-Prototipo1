@@ -65,17 +65,28 @@ public class EditElement extends AppCompatActivity {
         acept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if(!inputQ.getText().toString().equals("")){
                     intent.putExtra("quantity", inputQ.getText().toString());
                 }else{
-                    intent.putExtra("quantity", "0");
+                    if(description != null){
+                        intent.putExtra("quantity", quantity);
+                    }else {
+                        intent.putExtra("quantity", "0");
+                    }
                 }
 
                 if(!inputD.getText().toString().equals("")){
+
                     intent.putExtra("description", inputD.getText().toString());
 
                 }else{
-                    intent.putExtra("description", "n");
+                    if(description != null){
+                        intent.putExtra("description", description);
+                    }else {
+                        intent.putExtra("description", "n");
+                    }
+
                 }
 
                 setResult(9, intent);
@@ -91,33 +102,6 @@ public class EditElement extends AppCompatActivity {
             }
         });
 
-
-        /**
-         listNames = intent.getStringArrayListExtra("listNames");
-         listKeys = intent.getStringArrayListExtra("keyLists");
-
-         gv = (GridView) findViewById(R.id.mylists);
-
-         custom.setContentView(R.layout.dialog_add_list);
-         custom.setTitle("New Lista");
-
-         registerForContextMenu(gv);
-
-
-         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        intent.putExtra("lock", true);
-        intent.putExtra("listName", listNames.get(i));
-        intent.putExtra("keyList", listKeys.get(i));
-
-        setResult(3, intent);
-        finish();
-        }
-        });
-
-         **/
     }
 
 

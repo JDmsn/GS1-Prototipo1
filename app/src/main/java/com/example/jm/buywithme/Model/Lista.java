@@ -103,6 +103,24 @@ public class Lista {
 
     public boolean delete(Integer name, Integer namew, Integer id, String section, String quantity, String description, String owner, String productName){
         try{
+            List<String> a = this.productName;
+            for(int i = 0; i<a.size(); i++){
+                if(a.get(i).equals(productName)){
+                    this.arrayw.remove(i);
+                    this.array.remove(i);
+                    this.id.remove(i);
+                    this.section.remove(i);
+
+                    this.quantity.remove(i);
+                    this.description.remove(i);
+                    this.owner.remove(i);
+                    this.productName.remove(i);
+                    break;
+                }
+
+            }
+
+            /**
             arrayw.remove(namew);
             array.remove(name);
             this.id.remove(id);
@@ -112,6 +130,8 @@ public class Lista {
             this.description.remove(description);
             this.owner.remove(owner);
             this.productName.remove(productName);
+
+             **/
         }catch(Exception e){
 
             e.printStackTrace();
