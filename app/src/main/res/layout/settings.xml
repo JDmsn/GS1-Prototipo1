@@ -153,15 +153,16 @@
                 android:layout_marginEnd="26dp"
                 android:background="@drawable/buttonround"
                 android:text="Invite" />
+
             <Button
                 android:id="@+id/deleteList"
                 android:layout_width="250dp"
                 android:layout_height="40dp"
                 android:layout_below="@+id/addParticipantsField"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="32dp"
                 android:layout_marginBottom="32dp"
-                android:background="@drawable/buttonround"
+                android:layout_marginTop="32dp"
+                android:background="@android:color/holo_red_dark"
                 android:text="Delete List" />
 
         </RelativeLayout>

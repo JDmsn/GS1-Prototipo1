@@ -36,6 +36,7 @@
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:textSize="18dp" />
+
     <TextView
         android:id="@+id/quantity"
         android:layout_width="100dp"
@@ -46,7 +47,7 @@
         android:layout_marginBottom="39dp"
         android:text=""
         android:textAlignment="center"
-        android:textColor="@android:color/background_light"
+        android:textColor="?android:attr/colorActivatedHighlight"
         android:textSize="23dp" />
 
 
